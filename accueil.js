@@ -3,7 +3,7 @@
 //
 // Les deux nombres ci-dessous sont les seuls a changer si tu veux :
 var DUREE_PRIERE_SECONDES = 30;        // temps minimum de priere (en secondes)
-var PAUSE_ENTRE_PRIERES_MINUTES = 10;  // si tu as deja prie il y a moins de X minutes, la page ne revient pas (mets 0 pour l'avoir a chaque fois)
+var PAUSE_ENTRE_PRIERES_MINUTES = 60;  // si tu as deja prie il y a moins de X minutes, la page ne revient pas (mets 0 pour l'avoir a chaque fois)
 
 (function () {
   var CLE = "bj-accueil-derniere";
@@ -73,8 +73,8 @@ var PAUSE_ENTRE_PRIERES_MINUTES = 10;  // si tu as deja prie il y a moins de X m
 
   function tic() {
     var reste = Math.max(0, Math.ceil((fin - Date.now()) / 1000));
-    var m = Math.floor(reste / 15);
-    var s = reste % 15;
+    var m = Math.floor(reste / 60);
+    var s = reste % 60;
     compteur.textContent = m + ":" + (s < 10 ? "0" : "") + s;
     if (reste <= 0) {
       if (horloge) clearInterval(horloge);
