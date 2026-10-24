@@ -439,6 +439,27 @@ $("zone").onchange = () => {
     $("versets").textContent = "Impossible de charger la Bible (" + e.message + "). Vérifie ta connexion, ou ajoute le fichier crampon.json dans ton dépôt, à côté d'index.html.";
   }
 })();
+  <script>
+/* Lectures AELF : lit d'abord la copie faite chaque nuit par GitHub Actions */
+(() => {
+  const fetchOrigine = window.fetch.bind(window);
+  const proprio = location.hostname.split(".")[0];
+  const depot = location.pathname.split("/")[1];
+  window.fetch = async (url, ...rest) => {
+    const m = String(url).match(/^https:\/\/api\.aelf\.org\/v1\/(messes|informations)\/(\d{4}-\d{2}-\d{2})\/(\w+)$/);
+    if (!m) return fetchOrigine(url, ...rest);
+    const fichier = `aelf/${m[1]}-${m[2]}-${m[3]}.json`;
+    const essais = [fichier];
+    if (location.hostname.endsWith("github.io") && depot)
+      essais.push(`https://raw.githubusercontent.com/${proprio}/${depot}/main/${fichier}`);
+    for (const u of essais) {
+      try { const r = await fetchOrigine(u, { cache: "no-cache" }); if (r.ok) return r; } catch {}
+    }
+    return fetchOrigine(url, ...rest); // dernier recours : l'AELF directement
+  };
+})();
+</script>
+
 </script>
 </body>
 </html>
