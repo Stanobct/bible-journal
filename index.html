@@ -34,6 +34,7 @@
   .lecture h4 { color:var(--accent); margin:1.2rem 0 .3rem; }
   .lecture .refrain { font-style:italic; font-weight:bold; }
   .lecture p { white-space:pre-wrap; margin:.2rem 0; }
+  .erreur { font-size:.75rem; color:#8a7a66; word-break:break-all; }
   textarea { width:100%; min-height:140px; resize:vertical; }
   #zoneDessin { margin:.5rem 0; }
   canvas { width:100%; border:1px dashed #d6c7b2; border-radius:8px; touch-action:none; background:#fff; }
@@ -127,7 +128,8 @@
   </select>
   <p>Texte biblique : traduction du chanoine A. Crampon, édition révisée de 1923 (domaine public).<br>
   Lectures et calendrier liturgique : © <a href="https://www.aelf.org" target="_blank" rel="noopener">AELF</a>, usage personnel et non commercial.<br>
-  Ton journal reste uniquement sur cet appareil : pense à l'exporter régulièrement.</p>
+  Ton journal reste uniquement sur cet appareil : pense à l'exporter régulièrement.<br>
+  <strong>version 4</strong></p>
 </footer>
 
 <script>
@@ -137,7 +139,7 @@ const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-$
 const dateFr = (d, style="long") => d.toLocaleDateString("fr-FR", { dateStyle: style });
 const el = (tag, props = {}, ...enfants) => { const e = Object.assign(document.createElement(tag), props); e.append(...enfants); return e; };
 
-/* ---------- Stockage (IndexedDB : plus de place que localStorage) ---------- */
+/* ---------- Stockage (IndexedDB) ---------- */
 const idb = (() => {
   let dbp;
   const db = () => dbp ||= new Promise((ok, ko) => {
@@ -263,7 +265,34 @@ function citer(txt) {
   t.focus();
 }
 
-/* ---------- Liturgie (AELF) ---------- */
+/* ---------- Lectures AELF : lit la copie faite chaque nuit par GitHub Actions ---------- */
+const PROPRIO = location.hostname.split(".")[0];
+const DEPOT = (() => {
+  const s = location.pathname.split("/")[1];
+  return s && !s.includes(".") ? s : location.hostname; // site perso : depot = pseudo.github.io
+})();
+
+async function aelf(type, date, zone) {
+  const fichier = `aelf/${type}-${date}-${zone}.json`;
+  const essais = [fichier];
+  if (location.hostname.endsWith("github.io")) {
+    for (const b of ["main", "master"])
+      essais.push(`https://raw.githubusercontent.com/${PROPRIO}/${DEPOT}/${b}/${fichier}`);
+    essais.push(`https://cdn.jsdelivr.net/gh/${PROPRIO}/${DEPOT}@main/${fichier}`);
+  }
+  essais.push(`https://api.aelf.org/v1/${type}/${date}/${zone}`); // dernier recours
+  const erreurs = [];
+  for (const u of essais) {
+    try {
+      const r = await fetch(u, { cache: "no-cache" });
+      if (r.ok) return await r.json();
+      erreurs.push(`${u} → ${r.status}`);
+    } catch (e) { erreurs.push(`${u} → ${e.message}`); }
+  }
+  throw new Error(erreurs.join(" | "));
+}
+
+/* ---------- Liturgie ---------- */
 const COULEURS = { vert:"#2e7d32", violet:"#6a1b9a", rouge:"#c62828", blanc:"#c9a227", rose:"#d81b60", noir:"#333" };
 const TYPES = { lecture_1:"Première lecture", psaume:"Psaume", cantique:"Cantique", lecture_2:"Deuxième lecture",
   lecture_3:"Troisième lecture", sequence:"Séquence", entree_messianique:"Entrée messianique", evangile:"Évangile" };
@@ -275,9 +304,8 @@ async function chargerLiturgie() {
   const auj = new Date();
   $("liturgie").textContent = dateFr(auj, "full");
   try {
-    const r = await fetch(`https://api.aelf.org/v1/informations/${iso(auj)}/${$("zone").value}`);
-    if (!r.ok) return;
-    const j = await r.json(), info = j.informations || j;
+    const j = await aelf("informations", iso(auj), $("zone").value);
+    const info = j.informations || j;
     const coul = String(info.couleur || "").toLowerCase();
     if (COULEURS[coul]) document.documentElement.style.setProperty("--liturgie", COULEURS[coul]);
     const morceaux = [dateFr(auj, "full"), htmlVersTexte(info.jour_liturgique_nom), htmlVersTexte(info.fete), coul && "couleur : " + coul];
@@ -290,9 +318,7 @@ async function afficherMesse() {
   const box = $("messe"); box.textContent = "Chargement…";
   const jour = new Date(d + "T12:00:00");
   try {
-    const r = await fetch(`https://api.aelf.org/v1/messes/${d}/${zone}`);
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const messes = (await r.json()).messes || [];
+    const messes = (await aelf("messes", d, zone)).messes || [];
     box.innerHTML = "";
     const refs = [];
     for (const m of messes) {
@@ -300,8 +326,7 @@ async function afficherMesse() {
       for (const l of m.lectures || []) {
         const bloc = el("div", { className: "lecture" });
         bloc.append(el("h4", { textContent: (TYPES[l.type] || l.type) + (l.ref ? " — " + l.ref : "") }));
-        if (l.titre) bloc.append(el("p", { innerHTML: "<em></em>" }));
-        if (l.titre) bloc.lastChild.firstChild.textContent = htmlVersTexte(l.titre);
+        if (l.titre) bloc.append(el("p", {}, el("em", { textContent: htmlVersTexte(l.titre) })));
         if (l.refrain_psalmique) bloc.append(el("p", { className: "refrain", textContent: "R/ " + htmlVersTexte(l.refrain_psalmique) }));
         bloc.append(el("p", { textContent: htmlVersTexte(l.contenu) }));
         if (l.ref) {
@@ -313,12 +338,13 @@ async function afficherMesse() {
         box.append(bloc);
       }
     }
-    if (!box.childNodes.length) throw new Error("aucune lecture");
+    if (!box.childNodes.length) throw new Error("aucune lecture dans le fichier");
     definirPassage(`Messe du ${dateFr(jour)}` + (refs.length ? ` (${refs.join(" ; ")})` : ""));
   } catch (e) {
     box.innerHTML = "";
-    box.append(`Lectures indisponibles ici (${e.message}). `,
-      el("a", { href: `https://www.aelf.org/${d}/${zone}/messe`, target: "_blank", rel: "noopener", textContent: "Les lire sur aelf.org ↗" }));
+    box.append("Lectures indisponibles ici. ",
+      el("a", { href: `https://www.aelf.org/${d}/${zone}/messe`, target: "_blank", rel: "noopener", textContent: "Les lire sur aelf.org ↗" }),
+      el("p", { className: "erreur", textContent: "Détail : " + e.message }));
   }
 }
 
@@ -422,7 +448,7 @@ $("zone").onchange = () => {
   $("zone").value = prefs.zone || "france";
   $("dateMesse").value = iso(new Date());
   effacerDessin();
-  const ancien = localStorage.getItem("bj-data"); // reprise des données de l'ancienne version
+  const ancien = localStorage.getItem("bj-data"); // reprise des données de la toute première version
   etat = (await idb.get("journal").catch(() => null)) || (ancien ? JSON.parse(ancien) : etat);
   etat.surlignages ||= {}; etat.entrees ||= [];
   afficher(); chargerLiturgie();
@@ -438,25 +464,6 @@ $("zone").onchange = () => {
   } catch (e) {
     $("versets").textContent = "Impossible de charger la Bible (" + e.message + "). Vérifie ta connexion, ou ajoute le fichier crampon.json dans ton dépôt, à côté d'index.html.";
   }
-})();
-  <script>
-/* Lectures AELF : lit d'abord la copie faite chaque nuit par GitHub Actions */
-(() => {
-  const fetchOrigine = window.fetch.bind(window);
-  const proprio = location.hostname.split(".")[0];
-  const depot = location.pathname.split("/")[1];
-  window.fetch = async (url, ...rest) => {
-    const m = String(url).match(/^https:\/\/api\.aelf\.org\/v1\/(messes|informations)\/(\d{4}-\d{2}-\d{2})\/(\w+)$/);
-    if (!m) return fetchOrigine(url, ...rest);
-    const fichier = `aelf/${m[1]}-${m[2]}-${m[3]}.json`;
-    const essais = [fichier];
-    if (location.hostname.endsWith("github.io") && depot)
-      essais.push(`https://raw.githubusercontent.com/${proprio}/${depot}/main/${fichier}`);
-    for (const u of essais) {
-      try { const r = await fetchOrigine(u, { cache: "no-cache" }); if (r.ok) return r; } catch {}
-    }
-    return fetchOrigine(url, ...rest); // dernier recours : l'AELF directement
-  };
 })();
 </script>
 </body>
