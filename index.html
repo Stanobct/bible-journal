@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<script>
+window.onerror = function (msg, src, ligne, col) {
+  var f = String(src || "").split("/").pop().split("?")[0];
+  var txt = f ? "Erreur dans " + f + " ligne " + ligne + " (col. " + col + ") : " + msg : String(msg);
+  var b = document.createElement("div");
+  b.className = "bandeau-erreur";
+  b.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:9999;background:#b00020;color:#fff;padding:12px;font:14px sans-serif";
+  b.textContent = txt + "  (touche pour fermer)";
+  b.onclick = function () { b.remove(); };
+  (document.body || document.documentElement).appendChild(b);
+};
+window.addEventListener("unhandledrejection", function (e) {
+  window.onerror("Erreur : " + (e.reason && e.reason.message ? e.reason.message : e.reason), "", 0, 0);
+});
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#7a5c3e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Bible journal</title>
+<link rel="stylesheet" href="style.css?v=51">
+</head>
+<body>
+<div id="couvre-feu" hidden></div>
+<header class="entete">
+  <h1>Bible journal</h1>
+  <button id="btn-sos" class="sos" type="button">&#x1F198; SOS</button>
+</header>
+<main>
+  <section id="vue-parole"></section>
+  <section id="vue-fil" hidden></section>
+  <section id="vue-liberte" hidden></section>
+  <section id="vue-rituels" hidden></section>
+  <div class="pied">
+    <button id="btn-reglages" class="btn secondaire petit" type="button">&#x2699;&#xFE0F; R&eacute;glages</button>
+    <p>version 5.1</p>
+  </div>
+</main>
+<nav class="onglets">
+  <button id="nav-parole" type="button"><span>&#x1F4D6;</span>Parole</button>
+  <button id="nav-fil" type="button"><span>&#x1F343;</span>Fil</button>
+  <button id="nav-liberte" type="button"><span>&#x1F54A;&#xFE0F;</span>Libert&eacute;</button>
+  <button id="nav-rituels" type="button"><span>&#x1F56F;&#xFE0F;</span>Rituels</button>
+</nav>
+<div id="modale" class="modale" hidden></div>
+<script src="js/1-base.js?v=51"></script>
+<script src="js/2-bible.js?v=51"></script>
+<script src="js/3-sos.js?v=51"></script>
+<script src="js/4-liberte.js?v=51"></script>
+<script src="js/5-fil-rituels.js?v=51"></script>
+<script src="js/6-demarrage.js?v=51"></script>
+<script>
+window.addEventListener("load", function () {
+  if (!window.DEMARRE && !document.querySelector(".bandeau-erreur")) {
+    window.onerror("L'appli n'a pas demarre. Fichiers charges : " + (window.CHARGE || []).join(", ") + " (il en faut 6). Verifie js/6-demarrage.js.", "", 0, 0);
+  }
+});
+</script>
+</body>
+</html>
