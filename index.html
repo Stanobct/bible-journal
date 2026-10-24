@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <script>
+window.onerror = function (msg, src, ligne, col) {
+  var d = document.createElement("div");
+  d.style.cssText = "position:fixed;top:0;left:0;right:0;background:#c62828;color:#fff;padding:1rem;z-index:99999;font:14px sans-serif";
+  d.textContent = "Erreur ligne " + ligne + " (col. " + col + ") : " + msg;
+  (document.body || document.documentElement).appendChild(d);
+};
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#7a2e3a">
