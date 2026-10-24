@@ -2,8 +2,8 @@
 // Page d'accueil : priere avant d'utiliser l'application.
 //
 // Les deux nombres ci-dessous sont les seuls a changer si tu veux :
-var DUREE_PRIERE_SECONDES = 60;        // temps minimum de priere (en secondes)
-var PAUSE_ENTRE_PRIERES_MINUTES = 30;  // si tu as deja prie il y a moins de X minutes, la page ne revient pas (mets 0 pour l'avoir a chaque fois)
+var DUREE_PRIERE_SECONDES = 30;        // temps minimum de priere (en secondes)
+var PAUSE_ENTRE_PRIERES_MINUTES = 10;  // si tu as deja prie il y a moins de X minutes, la page ne revient pas (mets 0 pour l'avoir a chaque fois)
 
 (function () {
   var CLE = "bj-accueil-derniere";
