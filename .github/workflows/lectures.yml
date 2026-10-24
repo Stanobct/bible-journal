@@ -1,0 +1,47 @@
+name: Lectures AELF
+on:
+  schedule:
+    - cron: "0 3 * * *"   # chaque nuit vers 4-5 h (heure de Paris)
+  workflow_dispatch:       # permet de le lancer à la main
+permissions:
+  contents: write
+jobs:
+  telecharger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Télécharger les lectures
+        env:
+          TZ: Europe/Paris
+        run: |
+          mkdir -p aelf
+          # Supprime les fichiers de plus de 3 jours
+          limite=$(date -d "-3 days" +%F)
+          for f in aelf/*.json; do
+            [ -e "$f" ] || continue
+            d=$(basename "$f" | cut -d- -f2-4)
+            if [[ "$d" < "$limite" ]]; then rm "$f"; fi
+          done
+          # Télécharge aujourd'hui + les 7 prochains jours
+          for i in $(seq 0 7); do
+            jour=$(date -d "+$i days" +%F)
+            for zone in france belgique canada afrique romain; do
+              for type in messes informations; do
+                cible="aelf/$type-$jour-$zone.json"
+                if curl -sf --retry 3 "https://api.aelf.org/v1/$type/$jour/$zone" -o "$cible.tmp"; then
+                  mv "$cible.tmp" "$cible"
+                else
+                  rm -f "$cible.tmp"; echo "Échec : $type $jour $zone"
+                fi
+                sleep 1
+              done
+            done
+          done
+          ls aelf | head -20
+      - name: Enregistrer dans le dépôt
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
+          git add -A aelf
+          git diff --cached --quiet || git commit -m "Lectures AELF du $(date +%F)"
+          git push
