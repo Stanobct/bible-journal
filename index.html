@@ -873,18 +873,11 @@ function schemas() {
   sec.append(el("p", { textContent: `Tu as tenu bon dans ${Math.round(100 * tenues / t.length)} % des tentations notées (${tenues} sur ${t.length}).` }));
   const tranche = h => { const n = +String(h).slice(0, 2); return n >= 23 || n < 5 ? "Nuit (23 h – 5 h)" : n < 12 ? "Matin (5 h – 12 h)" : n < 18 ? "Après-midi (12 h – 18 h)" : "Soir (18 h – 23 h)"; };
   const compter = liste => { const m = {}; liste.forEach(x => m[x] = (m[x] || 0) + 1); return Object.entries(m).sort((a, b) => b[1] - a[1]); };
-  const groupes = [
-    ["🕐 Moments", compter(t.map(x => tranche(x.heure || "12:00")))],
-    ["💭 Émotions", compter(t.flatMap(x => x.emotions || []))],
-    ["📍 Lieux", compter(t.flatMap(x => x.lieux || []))],
-
-
-$$
-"⚡ Déclencheurs", compter(t.flatMap(x => x.declencheurs || []))
-$$
-
-
-  ];
+   const groupes = [];
+  groupes.push(["\u{1F550} Moments", compter(t.map(x => tranche(x.heure || "12:00")))]);
+  groupes.push(["\u{1F4AD} Émotions", compter(t.flatMap(x => x.emotions || []))]);
+  groupes.push(["\u{1F4CD} Lieux", compter(t.flatMap(x => x.lieux || []))]);
+  groupes.push(["\u26A1 Déclencheurs", compter(t.flatMap(x => x.declencheurs || []))]);
   const conseils = new Set();
   for (const [titre, liste] of groupes) {
     if (!liste.length) continue;
