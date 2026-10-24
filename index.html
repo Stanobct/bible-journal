@@ -9,17 +9,25 @@
 <style>
   :root { --papier:#fdf8f0; --encre:#3b3024; --accent:#7a2e3a; --liturgie:#7a2e3a; }
   * { box-sizing:border-box; }
-  body { margin:0; font-family:Georgia, serif; background:var(--papier); color:var(--encre); }
+  [hidden] { display:none !important; }
+  body { margin:0; padding-bottom:6rem; font-family:Georgia, serif; background:var(--papier); color:var(--encre); }
   header { background:var(--accent); color:#fff; padding:1rem; text-align:center; border-bottom:8px solid var(--liturgie); }
   header h1 { margin:0 0 .3rem; font-size:1.6rem; }
   #liturgie { font-size:.9rem; opacity:.95; }
+  nav.vues { display:flex; gap:.4rem; max-width:1150px; margin:auto; padding:.6rem 1rem; position:sticky; top:0; z-index:10; background:var(--papier); }
+  nav.vues button { flex:1; background:#e9dfd1; color:var(--encre); padding:.5rem .2rem; font-size:1.2rem; }
+  nav.vues button span { display:block; font-size:.8rem; }
+  nav.vues button.actif { background:var(--accent); color:#fff; }
   main { max-width:1150px; margin:auto; padding:1rem; display:grid; gap:1.5rem; grid-template-columns:1fr 1fr; }
   @media (max-width:850px){ main { grid-template-columns:1fr; } }
+  .vue { max-width:760px; margin:auto; padding:1rem; }
+  .vue > section { margin-bottom:1rem; }
   section { background:#fff; border-radius:12px; padding:1rem; box-shadow:0 2px 8px rgba(0,0,0,.08); min-width:0; }
   h2 { margin-top:0; color:var(--accent); }
   select, input, textarea, button { font:inherit; padding:.45rem .6rem; border:1px solid #d6c7b2; border-radius:8px; background:#fff; color:var(--encre); }
   button { background:var(--accent); color:#fff; border:none; cursor:pointer; }
   button.secondaire, label.secondaire { background:#e9dfd1; color:var(--encre); border-radius:8px; padding:.45rem .6rem; cursor:pointer; }
+  a.lien-bouton { background:var(--accent); color:#fff; padding:.45rem .7rem; border-radius:8px; text-decoration:none; }
   .ligne { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:.7rem; align-items:center; }
   .onglets { display:flex; gap:.5rem; margin-bottom:1rem; }
   .onglets button { flex:1; background:#e9dfd1; color:var(--encre); }
@@ -45,6 +53,40 @@
   .tag { display:inline-block; background:#e9dfd1; border-radius:10px; padding:0 8px; font-size:.8rem; margin-right:4px; }
   footer { text-align:center; font-size:.8rem; color:#8a7a66; padding:1rem; }
   a { color:var(--accent); }
+  /* ---- v5 ---- */
+  .aide { font-size:.85rem; color:#8a7a66; }
+  .priere { white-space:pre-wrap; background:var(--papier); padding:.8rem; border-radius:8px; font-style:italic; line-height:1.6; }
+  .grand { font-size:3.5rem; font-weight:bold; color:var(--accent); line-height:1; }
+  .barre { height:10px; background:#eee; border-radius:5px; overflow:hidden; margin:.3rem 0 .8rem; }
+  .barre > div { height:100%; background:var(--accent); }
+  .stat { font-size:.9rem; }
+  .chips { display:flex; flex-wrap:wrap; gap:.3rem; }
+  button.chip { background:#f1e8dc; color:var(--encre); border-radius:20px; padding:.3rem .7rem; font-size:.9rem; }
+  button.chip.on { background:var(--accent); color:#fff; }
+  .grille { display:grid; grid-template-columns:repeat(3,1fr); gap:.4rem; margin:.8rem 0; }
+  @media (max-width:500px){ .grille { grid-template-columns:repeat(2,1fr); } }
+  #btnSOS { position:fixed; right:1rem; bottom:1rem; width:64px; height:64px; border-radius:50%; background:#c62828; font-size:1.6rem; box-shadow:0 4px 14px rgba(0,0,0,.3); z-index:20; }
+  #modale { position:fixed; inset:0; background:rgba(30,20,10,.6); z-index:30; overflow-y:auto; padding:1rem; display:flex; }
+  .boite { background:#fff; border-radius:16px; padding:1.2rem; max-width:560px; width:100%; margin:auto; position:relative; }
+  .boite .fermer { position:absolute; top:.6rem; right:.6rem; }
+  .minuteur { font-size:2.2rem; text-align:center; font-variant-numeric:tabular-nums; color:var(--accent); }
+  .souffle { width:110px; height:110px; border-radius:50%; background:radial-gradient(#dcecff,#6a9fd8); margin:2.5rem auto; }
+  .fil { height:72vh; overflow-y:auto; scroll-snap-type:y mandatory; border-radius:16px; }
+  .carte { height:72vh; scroll-snap-align:start; display:flex; flex-direction:column; overflow-y:auto; padding:1.5rem; margin-bottom:.6rem; border-radius:16px; text-align:center; font-size:1.1rem; line-height:1.6; }
+  .carte > :first-child { margin-top:auto; }
+  .carte > :last-child { margin-bottom:auto; }
+  .carte .type { text-transform:uppercase; letter-spacing:.1em; font-size:.75rem; opacity:.7; margin-bottom:1rem; }
+  .carte .gros { font-size:1.3rem; }
+  .carte .ref { font-weight:bold; color:var(--accent); }
+  .carte button { align-self:center; margin-top:.5rem; }
+  .carte .priere, .carte ol { text-align:left; }
+  .c-verset{background:linear-gradient(160deg,#fdf3d8,#f3dcae);} .c-saint{background:linear-gradient(160deg,#e8f0fb,#c9dbf3);}
+  .c-defi{background:linear-gradient(160deg,#e4f5e1,#bfe3b8);} .c-question{background:linear-gradient(160deg,#fbe9ef,#f3c9d7);}
+  .c-priere{background:linear-gradient(160deg,#f1ebfa,#d9c9f0);} .c-mystere{background:linear-gradient(160deg,#e9f3fb,#bcd7ef);}
+  .c-evangile{background:linear-gradient(160deg,#fff8e6,#f0d9a0);} .c-fin{background:linear-gradient(160deg,#7a2e3a,#3b3024); color:#fff;}
+  #couvreFeu { position:fixed; inset:0; background:#0f1530; color:#e8e6f0; z-index:40; overflow-y:auto; padding:2rem 1.2rem; text-align:center; }
+  #couvreFeu .priere { background:rgba(255,255,255,.08); color:#e8e6f0; max-width:520px; margin:1rem auto; text-align:left; }
+  .toast { position:fixed; bottom:6rem; left:50%; transform:translateX(-50%); background:#3b3024; color:#fff; padding:.7rem 1.2rem; border-radius:20px; z-index:50; max-width:90vw; text-align:center; }
 </style>
 </head>
 <body>
@@ -53,6 +95,14 @@
   <div id="liturgie"></div>
 </header>
 
+<nav class="vues">
+  <button id="nav-parole" class="actif">📖<span>Parole</span></button>
+  <button id="nav-fil">🌿<span>Fil</span></button>
+  <button id="nav-liberte">🛡<span>Liberté</span></button>
+  <button id="nav-rituels">🌙<span>Rituels</span></button>
+</nav>
+
+<div id="vue-parole">
 <main>
   <!-- ===== LECTURE ===== -->
   <section>
@@ -116,6 +166,11 @@
     <div id="entrees"></div>
   </section>
 </main>
+</div>
+
+<div id="vue-fil" class="vue" hidden></div>
+<div id="vue-liberte" class="vue" hidden></div>
+<div id="vue-rituels" class="vue" hidden></div>
 
 <footer>
   Calendrier :
@@ -128,9 +183,13 @@
   </select>
   <p>Texte biblique : traduction du chanoine A. Crampon, édition révisée de 1923 (domaine public).<br>
   Lectures et calendrier liturgique : © <a href="https://www.aelf.org" target="_blank" rel="noopener">AELF</a>, usage personnel et non commercial.<br>
-  Ton journal reste uniquement sur cet appareil : pense à l'exporter régulièrement.<br>
-  <strong>version 4</strong></p>
+  Tes données restent uniquement sur cet appareil : pense à les exporter régulièrement.<br>
+  <strong>version 5</strong></p>
 </footer>
+
+<button id="btnSOS" title="J'ai besoin d'aide maintenant">🆘</button>
+<div id="modale" hidden></div>
+<div id="couvreFeu" hidden></div>
 
 <script>
 /* ---------- Outils ---------- */
@@ -168,7 +227,7 @@ const definirPassage = p => { passage = p; $("passageActuel").textContent = p ? 
 
 /* ---------- Bible Crampon ---------- */
 const SOURCES = [
-  "crampon.json", // facultatif : copie locale dans le dépôt
+  "crampon.json",
   "https://raw.githubusercontent.com/scrollmapper/bible_databases/master/formats/json/FreCrampon.json",
   "https://cdn.jsdelivr.net/gh/scrollmapper/bible_databases@master/formats/json/FreCrampon.json"
 ];
@@ -265,11 +324,11 @@ function citer(txt) {
   t.focus();
 }
 
-/* ---------- Lectures AELF : lit la copie faite chaque nuit par GitHub Actions ---------- */
+/* ---------- Lectures AELF (copie faite chaque nuit par GitHub Actions) ---------- */
 const PROPRIO = location.hostname.split(".")[0];
 const DEPOT = (() => {
   const s = location.pathname.split("/")[1];
-  return s && !s.includes(".") ? s : location.hostname; // site perso : depot = pseudo.github.io
+  return s && !s.includes(".") ? s : location.hostname;
 })();
 
 async function aelf(type, date, zone) {
@@ -280,7 +339,7 @@ async function aelf(type, date, zone) {
       essais.push(`https://raw.githubusercontent.com/${PROPRIO}/${DEPOT}/${b}/${fichier}`);
     essais.push(`https://cdn.jsdelivr.net/gh/${PROPRIO}/${DEPOT}@main/${fichier}`);
   }
-  essais.push(`https://api.aelf.org/v1/${type}/${date}/${zone}`); // dernier recours
+  essais.push(`https://api.aelf.org/v1/${type}/${date}/${zone}`);
   const erreurs = [];
   for (const u of essais) {
     try {
@@ -405,12 +464,743 @@ async function importer(e) {
   try {
     const d = JSON.parse(await e.target.files[0].text());
     if (!Array.isArray(d.entrees)) throw 0;
-    if (!confirm("Remplacer le journal actuel par cette sauvegarde ?")) return;
-    etat = { surlignages: d.surlignages || {}, entrees: d.entrees };
+    if (!confirm("Remplacer toutes les données actuelles par cette sauvegarde ?")) return;
+    etat = { surlignages: d.surlignages || {}, entrees: d.entrees, combat: d.combat, rituels: d.rituels, reglages: d.reglages };
+    normaliser(); deverrouille = false;
     await sauver(); afficher(); if (BIBLE.length) lire();
-    alert("Journal importé !");
+    alert("Données importées !");
   } catch { alert("Fichier invalide."); }
   e.target.value = "";
+}
+
+/* =====================================================================
+   VERSION 5 : SOS, LIBERTÉ, FIL, RITUELS, COUVRE-FEU
+   ===================================================================== */
+const auHasard = a => a[Math.floor(Math.random() * a.length)];
+const melanger = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const jourNum = s => Math.round(new Date(s + "T12:00:00").getTime() / 86400000);
+const ecart = (a, b) => jourNum(b) - jourNum(a);
+const ajouterJours = (s, n) => { const d = new Date(s + "T12:00:00"); d.setDate(d.getDate() + n); return iso(d); };
+const aujourdhui = () => iso(new Date());
+const heureMaintenant = () => new Date().toTimeString().slice(0, 5);
+const jourSoir = () => new Date().getHours() < 12 ? ajouterJours(aujourdhui(), -1) : aujourdhui();
+function toast(msg) { const t = el("div", { className: "toast", textContent: msg }); document.body.append(t); setTimeout(() => t.remove(), 3500); }
+function bouton(texte, action, classe = "") { const b = el("button", { className: classe, textContent: texte }); b.onclick = action; return b; }
+
+/* ---------- Contenus ---------- */
+const VERSETS = [
+  ["1 Corinthiens", 10, "13"], ["Jacques", 4, "7-8"], ["Philippiens", 4, "13"], ["2 Corinthiens", 12, "9"],
+  ["Matthieu", 26, "41"], ["Galates", 5, "1"], ["Jean", 8, "36"], ["Romains", 8, "1"], ["Romains", 12, "2"],
+  ["Matthieu", 5, "8"], ["1 Corinthiens", 6, "19-20"], ["Isaïe", 41, "10"], ["2 Timothée", 1, "7"],
+  ["Hébreux", 4, "15-16"], ["Matthieu", 11, "28"], ["Éphésiens", 6, "10-11"], ["1 Pierre", 5, "8-9"],
+  ["1 Jean", 1, "9"], ["Lamentations", 3, "22-23"], ["Michée", 7, "8"], ["Proverbes", 24, "16"],
+  ["Romains", 5, "20"], ["Philippiens", 4, "8"], ["Luc", 15, "20"]
+];
+
+const PRIERES = {
+  "Jésus, viens à mon secours": "Jésus, viens à mon secours.\nJésus, je te donne ce moment.\nJésus, j'ai confiance en toi.",
+  "Saint Michel Archange": "Saint Michel Archange, défendez-nous dans le combat ; soyez notre secours contre la méchanceté et les embûches du démon. Que Dieu lui fasse sentir son empire, nous vous en supplions ; et vous, Prince de la milice céleste, par la force divine, repoussez en enfer Satan et les autres esprits mauvais qui rôdent dans le monde pour la perte des âmes. Amen.",
+  "Je vous salue Marie": "Je vous salue, Marie, pleine de grâce ; le Seigneur est avec vous. Vous êtes bénie entre toutes les femmes, et Jésus, le fruit de vos entrailles, est béni. Sainte Marie, Mère de Dieu, priez pour nous, pauvres pécheurs, maintenant et à l'heure de notre mort. Amen.",
+  "Saint Joseph": "Saint Joseph, gardien de Jésus et chaste époux de Marie, garde mon cœur, mon regard et mon corps purs. Amen.",
+  "Prière de Jésus": "Seigneur Jésus-Christ, Fils de Dieu, aie pitié de moi, pécheur.\n\n(À répéter lentement, au rythme de ta respiration.)",
+  "Notre Père": "Notre Père, qui es aux cieux, que ton nom soit sanctifié, que ton règne vienne, que ta volonté soit faite sur la terre comme au ciel. Donne-nous aujourd'hui notre pain de ce jour. Pardonne-nous nos offenses, comme nous pardonnons aussi à ceux qui nous ont offensés. Et ne nous laisse pas entrer en tentation, mais délivre-nous du Mal. Amen.",
+  "Sous l'abri de ta miséricorde": "Sous l'abri de ta miséricorde, nous nous réfugions, sainte Mère de Dieu. Ne méprise pas nos prières quand nous sommes dans l'épreuve, mais de tous les dangers délivre-nous toujours, Vierge glorieuse et bénie.",
+  "Viens, Esprit Saint": "Viens, Esprit Saint, remplis le cœur de tes fidèles et allume en eux le feu de ton amour.",
+  "Ô Marie conçue sans péché": "Ô Marie, conçue sans péché, priez pour nous qui avons recours à vous.",
+  "Gloire au Père": "Gloire au Père, et au Fils, et au Saint-Esprit, comme il était au commencement, maintenant et toujours, et dans les siècles des siècles. Amen.",
+  "Ô mon Jésus": "Ô mon Jésus, pardonnez-nous nos péchés, préservez-nous du feu de l'enfer, et conduisez au ciel toutes les âmes, spécialement celles qui ont le plus besoin de votre miséricorde."
+};
+const CONTRITION = "Mon Dieu, j'ai un très grand regret de vous avoir offensé, parce que vous êtes infiniment bon, infiniment aimable, et que le péché vous déplaît. Je prends la ferme résolution, avec le secours de votre sainte grâce, de ne plus vous offenser et de faire pénitence.";
+const OFFRANDE = "Seigneur, je te donne cette journée : mes pensées, mes paroles, mes actions, mes joies et mes peines.\nGarde mon cœur et mon regard purs.\nQue tout ce que je vivrai aujourd'hui soit pour ta gloire. Amen.";
+const PRIERE_SOIR = "Seigneur, je te remets cette journée.\nCe que j'ai bien fait, je te le confie ; ce que j'ai mal fait, je te le donne : pardonne-moi.\nGarde mon cœur, mon corps et mes pensées pendant cette nuit.\nVierge Marie, saint Joseph, mon ange gardien, veillez sur moi.\nEntre tes mains, Seigneur, je remets mon esprit. Amen.";
+
+const SAINTS = [
+  { nom: "Saint Augustin", vie: "Jeune, il a longtemps été esclave de ses désirs. Il priait : « Donne-moi la chasteté… mais pas tout de suite ! » Converti à 32 ans, il est devenu évêque et docteur de l'Église.", mot: "Tu nous as faits pour toi, Seigneur, et notre cœur est sans repos tant qu'il ne repose en toi." },
+  { nom: "Saint Pier Giorgio Frassati", vie: "Étudiant italien, alpiniste, plein d'humour, il passait son temps libre à servir les pauvres de Turin. Canonisé en 2025.", mot: "Vers le haut !" },
+  { nom: "Saint Carlo Acutis", vie: "Ado passionné d'informatique, il appelait l'Eucharistie « son autoroute vers le Ciel ». Canonisé en 2025.", mot: "Tous naissent comme des originaux, mais beaucoup meurent comme des photocopies." },
+  { nom: "Saint Joseph", vie: "Le gardien de Jésus et de Marie. L'Église l'appelle « chaste époux » et « terreur des démons ».", mot: "Allez à Joseph !" },
+  { nom: "Saint Charles de Foucauld", vie: "Jeune officier, il vivait pour le plaisir. Converti à 28 ans, il est devenu le « frère universel » au cœur du Sahara.", mot: "Aussitôt que je crus qu'il y avait un Dieu, je compris que je ne pouvais faire autrement que de ne vivre que pour lui." },
+  { nom: "Saint Jean-Marie Vianney", vie: "Le curé d'Ars passait de longues heures chaque jour au confessionnal. Des foules venaient de toute la France pour recevoir le pardon.", mot: "Ce n'est pas le pécheur qui revient à Dieu pour lui demander pardon, c'est Dieu lui-même qui court après le pécheur." },
+  { nom: "Saint François de Sales", vie: "Évêque de Genève, maître de la douceur, envers les autres et envers soi-même.", mot: "Il faut avoir patience avec tout le monde, mais premièrement avec soi-même." },
+  { nom: "Sainte Thérèse de Lisieux", vie: "Morte à 24 ans, elle a montré la « petite voie » : tout attendre de la miséricorde de Dieu, et non de ses propres forces.", mot: "Ma vocation, c'est l'Amour !" },
+  { nom: "Saint Jean-Paul II", vie: "Il a enseigné la « théologie du corps » : ton corps n'est pas un ennemi, il est fait pour aimer et se donner.", mot: "N'ayez pas peur !" },
+  { nom: "Sainte Marie-Madeleine", vie: "Libérée par Jésus, elle l'a suivi jusqu'à la croix et a été la première témoin de sa résurrection.", mot: "" },
+  { nom: "Saint Michel Archange", vie: "Le chef des armées célestes, protecteur dans le combat spirituel. Son nom signifie « Qui est comme Dieu ? ».", mot: "" },
+  { nom: "Saint Thomas d'Aquin", vie: "Le plus grand théologien de l'Église. Jeune, il a repoussé avec force une tentation, puis a demandé à Dieu le don de la pureté.", mot: "" }
+];
+
+const DEFIS = [
+  "Écris un message à un ami que tu n'as pas vu depuis longtemps.", "Fais 20 pompes (ou 30 squats).",
+  "Sors marcher 10 minutes, sans téléphone.", "Range une pièce ou ton bureau.", "Lis 10 pages d'un livre.",
+  "Appelle un membre de ta famille.", "Rends un service sans qu'on te le demande.",
+  "Passe à l'église, même 5 minutes, devant le Saint-Sacrement.", "Note 3 choses pour lesquelles tu dis merci.",
+  "Prie une dizaine de chapelet en marchant.", "Cuisine quelque chose de bon.", "Prépare tes affaires pour demain.",
+  "Pose ton téléphone dans une autre pièce pendant 30 minutes.", "Cache ou désinstalle une appli qui te fait perdre du temps.",
+  "Fais quelque chose de créatif : dessin, musique, écriture.", "Fixe la date de ta prochaine confession.",
+  "Envoie un mot d'encouragement à quelqu'un qui en a besoin.", "Bois un grand verre d'eau et ouvre la fenêtre."
+];
+const QUESTIONS = [
+  "Qu'est-ce qui me rend vraiment heureux en ce moment ?", "De quoi ai-je vraiment soif quand je suis tenté ?",
+  "Pour quoi puis-je dire merci aujourd'hui ?", "Quelle personne Dieu me confie-t-il aujourd'hui ?",
+  "Qu'est-ce que je ressens, là, maintenant ?", "Quel homme je veux devenir dans 5 ans ?",
+  "Où ai-je senti Dieu proche cette semaine ?", "Quelle peur je porte en ce moment ?",
+  "Si Jésus était assis à côté de moi, que lui dirais-je ?", "Qu'est-ce qui m'a fait du bien cette semaine ?",
+  "Quelle petite victoire puis-je fêter aujourd'hui ?", "Qu'est-ce que je veux vraiment offrir à la personne que j'aimerai ?"
+];
+const ACTIONS = [
+  "Lève-toi et sors de la pièce, maintenant.", "Va marcher 10 minutes dehors, sans téléphone.",
+  "Fais 20 pompes ou 30 squats.", "Prends une douche, fraîche si possible.", "Appelle ou écris à quelqu'un.",
+  "Pose ton téléphone dans une autre pièce.", "Bois un grand verre d'eau.", "Va dans une pièce où il y a du monde.",
+  "Si tu es au lit : allume la lumière et assieds-toi.", "Prie à voix haute, même une phrase."
+];
+const MYSTERES = {
+  joyeux: ["L'Annonciation", "La Visitation", "La Nativité", "La Présentation de Jésus au Temple", "Le Recouvrement de Jésus au Temple"],
+  lumineux: ["Le Baptême de Jésus", "Les noces de Cana", "L'annonce du Royaume", "La Transfiguration", "L'institution de l'Eucharistie"],
+  douloureux: ["L'Agonie de Jésus", "La Flagellation", "Le Couronnement d'épines", "Le Portement de la Croix", "La Crucifixion"],
+  glorieux: ["La Résurrection", "L'Ascension", "La Pentecôte", "L'Assomption de Marie", "Le Couronnement de Marie"]
+};
+const mysteresDuJour = () => { const n = ["glorieux","joyeux","douloureux","glorieux","lumineux","douloureux","joyeux"][new Date().getDay()]; return [n, MYSTERES[n]]; };
+
+const PALIERS = [
+  [1, "Premier jour", "Chaque chemin commence par un pas. Confie-le à Dieu."],
+  [3, "3 jours", "Le Christ s'est relevé le troisième jour. Toi aussi, tu te relèves."],
+  [7, "Une semaine", "Saint Joseph, gardien des cœurs purs, veille sur toi."],
+  [14, "Deux semaines", "« Ma grâce te suffit » (2 Co 12, 9). Tu en es la preuve."],
+  [30, "Un mois", "Saint Augustin a mis des années à se libérer, et il est devenu un grand saint. Courage !"],
+  [60, "Deux mois", "Saint Charles de Foucauld : une jeunesse dissipée, puis une vie toute donnée."],
+  [90, "Trois mois", "« Vers le haut ! » disait saint Pier Giorgio Frassati. Continue de grimper."],
+  [180, "Six mois", "Sainte Thérèse : « Ma vocation, c'est l'Amour ! » Ton cœur se libère pour aimer."],
+  [365, "Un an", "« N'ayez pas peur ! » (saint Jean-Paul II). Une année de liberté : rends grâce !"]
+];
+
+const EMOTIONS = ["Fatigue","Ennui","Solitude","Stress","Tristesse","Colère","Frustration","Rejet","Anxiété","Curiosité"];
+const LIEUX = ["Au lit","Chambre","Salle de bain","Canapé","Bureau / travail","Dehors","Transports"];
+const DECLENCHEURS = ["Scrolling","Réseaux sociaux","Image ou vidéo","Série / film","Insomnie","Dispute","Échec / déception","Alcool","Seul à la maison","Rien de précis"];
+const CONSEILS = {
+  "Nuit (23 h – 5 h)": "Tes tentations arrivent surtout la nuit : active le couvre-feu 🌙 et laisse le téléphone hors de la chambre.",
+  "Soir (18 h – 23 h)": "Le soir est ton moment fragile : prévois une activité (sport, appel, lecture) et fais ton examen du soir tôt.",
+  "Fatigue": "La fatigue baisse les défenses : te coucher plus tôt est un vrai acte de combat.",
+  "Ennui": "Contre l'ennui : garde une liste de choses à faire et utilise le Fil 🌿 au lieu de scroller.",
+  "Solitude": "La solitude pèse : appelle quelqu'un, rejoins un groupe de jeunes ou une fraternité de ta paroisse.",
+  "Stress": "Le stress cherche une soupape : le sport et la respiration (bouton 🆘) en sont de meilleures.",
+  "Tristesse": "Quand tu es triste, parles-en à Dieu dans ton journal, et à un ami.",
+  "Au lit": "Le lit revient souvent : le téléphone dort ailleurs. Achète un vrai réveil.",
+  "Scrolling": "Le scrolling ouvre la porte : remplace-le par le Fil 🌿, qui s'arrête après 10 cartes.",
+  "Réseaux sociaux": "Les réseaux sociaux reviennent souvent : cache ou supprime l'appli, ou limite-la avec Temps d'écran.",
+  "Insomnie": "En cas d'insomnie, ne prends pas le téléphone : prie un chapelet dans ton lit, à voix basse.",
+  "Seul à la maison": "Seul à la maison : prévois de sortir (bibliothèque, café, sport) ou d'inviter quelqu'un.",
+  "Alcool": "L'alcool affaiblit la vigilance : sois prudent les soirs où tu bois."
+};
+const EXAMEN = [
+  ["🕯 Se mettre en présence de Dieu", "Prends un instant de silence : « Seigneur, éclaire-moi pour que je voie ma journée avec ton regard. »", false],
+  ["🙏 Remercier", "Pour quoi puis-je dire merci aujourd'hui ?", true],
+  ["🔍 Relire", "Où ai-je senti Dieu proche ? Où me suis-je éloigné de lui ?", true],
+  ["🤍 Demander pardon", "Qu'est-ce que je veux déposer devant lui ?", true],
+  ["🌅 Préparer demain", "Une résolution simple et concrète pour demain :", true]
+];
+
+/* ---------- Données ---------- */
+const combatVide = () => ({ debut: aujourdhui(), chutes: [], tentations: [], lettre: "", contacts: [{ nom: "", tel: "" }, { nom: "", tel: "" }], pin: null });
+function normaliser() {
+  etat.surlignages ||= {}; etat.entrees ||= [];
+  etat.combat = Object.assign(combatVide(), etat.combat || {});
+  while (etat.combat.contacts.length < 2) etat.combat.contacts.push({ nom: "", tel: "" });
+  etat.rituels = Object.assign({ matin: {}, soir: {} }, etat.rituels || {});
+  etat.reglages = Object.assign({ couvreFeu: true, cfDebut: "23:00", cfFin: "06:00" }, etat.reglages || {});
+}
+
+/* ---------- Versets tirés de la Bible Crampon ---------- */
+function texteVerset([livre, ch, vv]) {
+  const l = BIBLE.find(b => b.fr === livre);
+  const [a, z = a] = vv.split("-").map(Number);
+  const morceaux = [];
+  if (l && l.chapitres[ch]) for (let v = a; v <= z; v++) if (l.chapitres[ch][v]) morceaux.push(l.chapitres[ch][v].trim());
+  return { texte: morceaux.join(" "), ref: `${livre} ${ch}, ${vv}` };
+}
+function blocVerset(v) {
+  const { texte, ref } = texteVerset(v);
+  return el("div", {},
+    el("p", { className: "priere", textContent: texte ? `« ${texte} »` : "Ouvre ta Bible à ce passage." }),
+    el("p", { style: "text-align:right;font-weight:bold;margin:.2rem 0" }, ref + " ", bouton("Lire le chapitre", () => allerA(v[0], v[1]), "secondaire")));
+}
+function allerA(livre, ch) {
+  const i = BIBLE.findIndex(b => b.fr === livre);
+  if (i < 0) return;
+  fermerModale(); vue("parole"); onglet(false);
+  $("livre").value = i; remplirChapitres(); $("chapitre").value = ch; lire();
+}
+
+/* ---------- Navigation ---------- */
+const VUES = ["parole", "fil", "liberte", "rituels"];
+let vueActive = "parole";
+let deverrouille = false;
+function vue(nom) {
+  if (vueActive === "liberte" && nom !== "liberte") deverrouille = false;
+  vueActive = nom;
+  for (const v of VUES) { $("vue-" + v).hidden = v !== nom; $("nav-" + v).classList.toggle("actif", v === nom); }
+  if (nom === "fil") rendreFil();
+  if (nom === "liberte") rendreLiberte();
+  if (nom === "rituels") rendreRituels();
+  window.scrollTo(0, 0);
+}
+
+/* ---------- Fenêtre modale ---------- */
+let nettoyageModale = null;
+function ouvrirModale(...contenu) {
+  if (nettoyageModale) { nettoyageModale(); nettoyageModale = null; }
+  $("modale").replaceChildren(el("div", { className: "boite" }, bouton("✕", fermerModale, "secondaire fermer"), ...contenu));
+  $("modale").hidden = false; $("modale").scrollTop = 0;
+}
+function fermerModale() {
+  if (nettoyageModale) { nettoyageModale(); nettoyageModale = null; }
+  $("modale").hidden = true; $("modale").replaceChildren();
+}
+
+/* ---------- 🆘 SOS ---------- */
+let souffleId = null;
+function stopSouffle() { clearTimeout(souffleId); souffleId = null; }
+function respirer(zone) {
+  stopSouffle();
+  const rond = el("div", { className: "souffle" }), txt = el("p", { style: "text-align:center;font-size:1.3rem", textContent: "Prépare-toi…" });
+  zone.replaceChildren(rond, txt);
+  let cycles = 0;
+  const inspire = () => {
+    if (cycles++ >= 6) { rond.style.transform = "scale(1)"; txt.textContent = "Bien. Recommence ou choisis autre chose 👆"; return; }
+    rond.style.transition = "transform 4s ease-in-out"; rond.style.transform = "scale(1.6)";
+    txt.textContent = "Inspire…"; souffleId = setTimeout(expire, 4000);
+  };
+  const expire = () => {
+    rond.style.transition = "transform 6s ease-in-out"; rond.style.transform = "scale(1)";
+    txt.textContent = "Expire lentement…"; souffleId = setTimeout(inspire, 6000);
+  };
+  souffleId = setTimeout(inspire, 600);
+}
+
+function sos() {
+  const fin = Date.now() + 15 * 60000;
+  const minuteur = el("div", { className: "minuteur" });
+  const zone = el("div");
+  const victoireZone = el("div");
+  const montrer = f => { stopSouffle(); f(); };
+
+  const prier = () => {
+    const txt = el("p", { className: "priere", textContent: PRIERES["Jésus, viens à mon secours"] });
+    const liste = el("div", { className: "chips" }, ...Object.keys(PRIERES).map(n => bouton(n, () => txt.textContent = PRIERES[n], "chip")));
+    zone.replaceChildren(txt, liste);
+  };
+  const parole = () => { zone.replaceChildren(blocVerset(auHasard(VERSETS)), bouton("Un autre verset", parole, "secondaire")); };
+  const agir = () => { zone.replaceChildren(el("p", { className: "priere", style: "font-size:1.2rem;font-style:normal", textContent: "👉 " + auHasard(ACTIONS) }), bouton("Une autre idée", agir, "secondaire")); };
+  const lettre = () => {
+    const l = etat.combat.lettre.trim();
+    zone.replaceChildren(l ? el("p", { className: "priere", textContent: l })
+      : el("p", { textContent: "Tu n'as pas encore écrit ta lettre. Fais-le dans 🛡 Liberté → Réglages, un jour où tu vas bien." }));
+  };
+  const appeler = () => {
+    const cs = etat.combat.contacts.filter(x => x.tel.trim());
+    zone.replaceChildren();
+    if (!cs.length) zone.append(el("p", { textContent: "Ajoute 1 ou 2 personnes de confiance dans 🛡 Liberté → Réglages. En attendant, écris à un ami, même juste : « Prie pour moi. »" }));
+    for (const x of cs) {
+      const tel = x.tel.replace(/[\s.]/g, "");
+      zone.append(el("div", { className: "ligne" }, el("strong", { textContent: x.nom || x.tel }),
+        el("a", { className: "lien-bouton", href: "tel:" + tel, textContent: "📞 Appeler" }),
+        el("a", { className: "lien-bouton", href: "sms:" + tel + "?&body=" + encodeURIComponent("Je traverse un moment difficile. Tu peux prier pour moi, ou m'appeler ? 🙏"), textContent: "💬 Message" })));
+    }
+  };
+
+  ouvrirModale(
+    el("h2", { textContent: "Tiens bon 🙏" }),
+    el("p", { textContent: "Cette envie est une vague : elle monte, puis elle retombe. Tiens ces 15 minutes. Tu n'es pas seul, Dieu est là." }),
+    minuteur,
+    el("div", { className: "grille" },
+      bouton("🌬 Respirer", () => respirer(zone)), bouton("🙏 Prier", () => montrer(prier)),
+      bouton("📖 Une Parole", () => montrer(parole)), bouton("🏃 Agir", () => montrer(agir)),
+      bouton("✉️ Ma lettre", () => montrer(lettre)), bouton("📞 Appeler", () => montrer(appeler))),
+    zone, victoireZone,
+    el("div", { className: "ligne", style: "justify-content:center;margin-top:1rem" },
+      bouton("💪 J'ai tenu !", () => formulaire("tenu")), bouton("🤍 Je suis tombé", pageChute, "secondaire")));
+
+  const tick = () => {
+    const reste = Math.max(0, fin - Date.now());
+    minuteur.textContent = `${String(Math.floor(reste / 60000)).padStart(2, "0")}:${String(Math.floor(reste / 1000) % 60).padStart(2, "0")}`;
+    if (!reste) {
+      clearInterval(id);
+      minuteur.textContent = "Tu as tenu 💪";
+      victoireZone.replaceChildren(el("p", { style: "text-align:center", textContent: "La vague est passée. Rends grâce à Dieu !" }),
+        el("div", { style: "text-align:center" }, bouton("Noter cette victoire", () => formulaire("tenu"))));
+    }
+  };
+  const id = setInterval(tick, 1000);
+  tick();
+  respirer(zone);
+  nettoyageModale = () => { clearInterval(id); stopSouffle(); };
+}
+
+/* ---------- Noter une tentation ---------- */
+function groupeChips(options) {
+  const choisis = new Set();
+  const div = el("div", { className: "chips" });
+  for (const o of options) {
+    const b = bouton(o, () => { choisis.has(o) ? choisis.delete(o) : choisis.add(o); b.classList.toggle("on"); }, "chip");
+    div.append(b);
+  }
+  return { div, choisis };
+}
+
+function formulaire(issue) {
+  const date = el("input", { type: "date", value: aujourdhui() });
+  const heure = el("input", { type: "time", value: heureMaintenant() });
+  const em = groupeChips(EMOTIONS), li = groupeChips(LIEUX), de = groupeChips(DECLENCHEURS);
+  const note = el("textarea", { placeholder: "Un mot ? (facultatif)", style: "min-height:70px;margin-top:.8rem" });
+  const ok = bouton(issue === "tenu" ? "Enregistrer ma victoire 💪" : "Enregistrer et repartir 🌱", () => {
+    const c = etat.combat, d = date.value || aujourdhui();
+    c.tentations.push({ id: Date.now(), date: d, heure: heure.value || heureMaintenant(), issue,
+      emotions: [...em.choisis], lieux: [...li.choisis], declencheurs: [...de.choisis], note: note.value.trim() });
+    if (issue === "chute" && !c.chutes.includes(d)) c.chutes.push(d);
+    sauver(); fermerModale();
+    toast(issue === "tenu" ? "Bravo ! Rends grâce à Dieu pour cette victoire 🙏" : "C'est noté. Relève-toi : Dieu ne se lasse jamais de pardonner 🤍");
+    if (vueActive === "liberte") rendreLiberte();
+  });
+  ok.style.width = "100%"; ok.style.marginTop = ".8rem";
+  ouvrirModale(
+    el("h2", { textContent: issue === "tenu" ? "💪 Victoire !" : "🌱 Comprendre pour avancer" }),
+    el("p", { className: "aide", textContent: "20 secondes pour comprendre ce qui s'est passé. Rien n'est obligatoire." }),
+    el("div", { className: "ligne" }, date, heure),
+    el("h4", { textContent: "Ce que je ressentais" }), em.div,
+    el("h4", { textContent: "Où j'étais" }), li.div,
+    el("h4", { textContent: "Ce qui l'a déclenché" }), de.div,
+    note, ok);
+}
+
+/* ---------- Je suis tombé ---------- */
+function pageChute() {
+  ouvrirModale(
+    el("h2", { textContent: "🤍 Tu es tombé. Tu n'es pas perdu." }),
+    el("p", { textContent: "Respire. La honte te pousse à te cacher, mais Dieu t'attend les bras ouverts. Comme le père de la parabole, il court vers toi :" }),
+    blocVerset(["Luc", 15, "20"]),
+    el("h4", { textContent: "Acte de contrition" }),
+    el("p", { className: "priere", textContent: CONTRITION }),
+    el("h4", { textContent: "Le sacrement de la réconciliation" }),
+    el("p", {}, "Prévois de te confesser dès que possible. Les horaires sont souvent sur le site de ta paroisse ou sur ",
+      el("a", { href: "https://messes.info", target: "_blank", rel: "noopener", textContent: "messes.info" }), "."),
+    blocVerset(["Michée", 7, "8"]),
+    el("p", { textContent: "Ton compteur ne repart pas de rien : chaque jour gagné reste gagné. Ce n'est pas la fin de ton histoire." }),
+    el("div", { className: "ligne", style: "justify-content:center" },
+      bouton("Noter et repartir 🌱", () => formulaire("chute")), bouton("Plus tard", fermerModale, "secondaire")));
+}
+
+/* ---------- 🛡 Liberté ---------- */
+async function hacher(code) {
+  const txt = "bible-journal:" + code;
+  if (window.crypto && crypto.subtle) {
+    const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(txt));
+    return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
+  }
+  return btoa(unescape(encodeURIComponent(txt)));
+}
+
+function stats() {
+  const c = etat.combat, auj = aujourdhui(), chutes = new Set(c.chutes);
+  const passees = c.chutes.filter(d => d <= auj).sort();
+  const derniere = passees[passees.length - 1];
+  const serie = Math.max(0, derniere && derniere >= c.debut ? ecart(derniere, auj) : ecart(c.debut, auj) + 1);
+  let meilleure = 0, cours = 0;
+  for (let d = c.debut; d <= auj; d = ajouterJours(d, 1)) { cours = chutes.has(d) ? 0 : cours + 1; meilleure = Math.max(meilleure, cours); }
+  const debutMois = auj.slice(0, 8) + "01", depart = c.debut > debutMois ? c.debut : debutMois;
+  let libres = 0, totalMois = 0;
+  for (let d = depart; d <= auj; d = ajouterJours(d, 1)) { totalMois++; if (!chutes.has(d)) libres++; }
+  const tenues = c.tentations.filter(x => x.issue === "tenu");
+  return { serie, meilleure, libres, totalMois, victoires: tenues.length,
+    victoiresMois: tenues.filter(x => x.date.startsWith(auj.slice(0, 7))).length };
+}
+
+function rendreLiberte() {
+  const box = $("vue-liberte"); box.replaceChildren();
+  const c = etat.combat;
+  if (c.pin && !deverrouille) {
+    const champ = el("input", { type: "password", inputMode: "numeric", placeholder: "Code", autocomplete: "off", style: "font-size:1.5rem;text-align:center;width:10rem" });
+    const valider = async () => {
+      if (await hacher(champ.value) === c.pin) { deverrouille = true; rendreLiberte(); }
+      else { champ.value = ""; toast("Code incorrect"); }
+    };
+    champ.onkeydown = e => { if (e.key === "Enter") valider(); };
+    box.append(el("section", { style: "text-align:center" },
+      el("h2", { textContent: "🔒 Espace protégé" }), champ, el("div", { style: "height:.8rem" }),
+      bouton("Ouvrir", valider), el("p", {}, bouton("Code oublié ?", oubliCode, "secondaire"))));
+    setTimeout(() => champ.focus(), 50);
+    return;
+  }
+
+  const s = stats();
+  const atteint = [...PALIERS].reverse().find(p => s.serie >= p[0]);
+  const prochain = PALIERS.find(p => p[0] > s.serie);
+  box.append(el("section", { style: "text-align:center" },
+    el("h2", { textContent: "🛡 Mon chemin de liberté" }),
+    el("div", { className: "grand", textContent: s.serie }),
+    el("p", { textContent: s.serie ? (s.serie > 1 ? "jours de liberté d'affilée" : "jour de liberté") : "Aujourd'hui est un nouveau départ 🌱" }),
+    atteint ? el("p", { className: "priere", textContent: `🏅 ${atteint[1]} : ${atteint[2]}` }) : "",
+    prochain ? el("div", {}, el("small", { textContent: `Prochaine étape : ${prochain[1]} (${prochain[0]} jours)` }),
+      el("div", { className: "barre" }, el("div", { style: `width:${Math.min(100, 100 * s.serie / prochain[0])}%` }))) : "",
+    el("p", { textContent: `🌱 Ce mois-ci : ${s.libres} jour${s.libres > 1 ? "s" : ""} de liberté sur ${s.totalMois}` }),
+    el("p", { textContent: `💪 Tentations surmontées : ${s.victoires} (dont ${s.victoiresMois} ce mois-ci) · 🏆 Meilleure série : ${s.meilleure} j` }),
+    el("div", { className: "ligne", style: "justify-content:center" },
+      bouton("💪 J'ai résisté à une tentation", () => formulaire("tenu")),
+      bouton("🤍 Je suis tombé", pageChute, "secondaire")),
+    el("p", { className: "aide", textContent: "Une chute ne remet pas tout à zéro : chaque jour gagné reste gagné." })));
+  box.append(schemas(), bilan(), historique(), reglagesLiberte());
+}
+
+function oubliCode() {
+  if (!confirm("Pour protéger ton intimité, réinitialiser le code efface les données de l'espace Liberté (compteur, tentations, lettre, contacts). Ton journal et ta Bible ne sont pas touchés. Continuer ?")) return;
+  etat.combat = combatVide(); deverrouille = false; sauver(); rendreLiberte();
+}
+
+function schemas() {
+  const t = etat.combat.tentations;
+  const sec = el("section", {}, el("h2", { textContent: "📊 Mes schémas" }));
+  if (t.length < 3) {
+    sec.append(el("p", { textContent: `Note au moins 3 tentations, gagnées ou non, pour voir apparaître tes schémas. Tu en as noté ${t.length}.` }));
+    return sec;
+  }
+  const tenues = t.filter(x => x.issue === "tenu").length;
+  sec.append(el("p", { textContent: `Tu as tenu bon dans ${Math.round(100 * tenues / t.length)} % des tentations notées (${tenues} sur ${t.length}).` }));
+  const tranche = h => { const n = +String(h).slice(0, 2); return n >= 23 || n < 5 ? "Nuit (23 h – 5 h)" : n < 12 ? "Matin (5 h – 12 h)" : n < 18 ? "Après-midi (12 h – 18 h)" : "Soir (18 h – 23 h)"; };
+  const compter = liste => { const m = {}; liste.forEach(x => m[x] = (m[x] || 0) + 1); return Object.entries(m).sort((a, b) => b[1] - a[1]); };
+  const groupes = [
+    ["🕐 Moments", compter(t.map(x => tranche(x.heure || "12:00")))],
+    ["💭 Émotions", compter(t.flatMap(x => x.emotions || []))],
+    ["📍 Lieux", compter(t.flatMap(x => x.lieux || []))],
+
+
+$$
+"⚡ Déclencheurs", compter(t.flatMap(x => x.declencheurs || []))
+$$
+
+
+  ];
+  const conseils = new Set();
+  for (const [titre, liste] of groupes) {
+    if (!liste.length) continue;
+    sec.append(el("h4", { textContent: titre }));
+    for (const [nom, n] of liste.slice(0, 4)) {
+      const pc = Math.min(100, Math.round(100 * n / t.length));
+      sec.append(el("div", { className: "stat", textContent: `${nom} : ${pc} %` }), el("div", { className: "barre" }, el("div", { style: `width:${pc}%` })));
+    }
+    liste.slice(0, 2).forEach(([nom]) => CONSEILS[nom] && conseils.add(CONSEILS[nom]));
+  }
+  if (conseils.size) sec.append(el("h4", { textContent: "💡 Pistes pour toi" }), el("ul", {}, ...[...conseils].map(x => el("li", { textContent: x }))));
+  return sec;
+}
+
+function bilanTexte() {
+  const c = etat.combat, R = etat.rituels, auj = aujourdhui(), d7 = ajouterJours(auj, -6);
+  let libres = 0, total = 0, matins = 0, soirs = 0;
+  for (let d = d7; d <= auj; d = ajouterJours(d, 1)) {
+    if (d >= c.debut) { total++; if (!c.chutes.includes(d)) libres++; }
+    if (d in R.matin) matins++;
+    if (R.soir[d]) soirs++;
+  }
+  const tenues = c.tentations.filter(x => x.issue === "tenu" && x.date >= d7 && x.date <= auj).length;
+  const chutes = c.chutes.filter(d => d >= d7 && d <= auj).length;
+  return [
+    `Mon bilan de la semaine (${dateFr(new Date(d7 + "T12:00:00"), "short")} → ${dateFr(new Date(), "short")}) :`,
+    `✅ Jours de liberté : ${libres}/${total}`,
+    `💪 Tentations surmontées : ${tenues}`,
+    `🤍 Chutes : ${chutes}`,
+    `☀️ Prières du matin : ${matins}/7 · 🌙 Examens du soir : ${soirs}/7`,
+    `Série actuelle : ${stats().serie} jour(s)`,
+    "", "Merci de prier pour moi 🙏"
+  ].join("\n");
+}
+
+function bilan() {
+  const ta = el("textarea", { value: bilanTexte(), style: "min-height:170px" });
+  const ligne = el("div", { className: "ligne", style: "margin-top:.5rem" });
+  if (navigator.share) ligne.append(bouton("📤 Partager", () => navigator.share({ text: ta.value }).catch(() => {})));
+  ligne.append(
+    bouton("💬 SMS", () => { location.href = "sms:?&body=" + encodeURIComponent(ta.value); }, "secondaire"),
+    bouton("🟢 WhatsApp", () => window.open("https://wa.me/?text=" + encodeURIComponent(ta.value), "_blank"), "secondaire"),
+    bouton("📋 Copier", () => navigator.clipboard.writeText(ta.value).then(() => toast("Copié 📋"), () => toast("Copie impossible")), "secondaire"));
+  return el("section", {}, el("h2", { textContent: "🤝 Mon bilan de la semaine" }),
+    el("p", { className: "aide", textContent: "Relis-le, modifie-le si tu veux, puis envoie-le à un ami de confiance, un prêtre ou ton accompagnateur." }), ta, ligne);
+}
+
+function historique() {
+  const t = [...etat.combat.tentations].sort((a, b) => (b.date + b.heure).localeCompare(a.date + a.heure)).slice(0, 15);
+  const sec = el("section", {}, el("h2", { textContent: "🗒 Derniers combats" }));
+  if (!t.length) { sec.append(el("p", { textContent: "Rien de noté pour l'instant." })); return sec; }
+  for (const x of t) {
+    const suppr = bouton("🗑", () => {
+      if (!confirm("Supprimer cette note ?")) return;
+      const c = etat.combat;
+      c.tentations = c.tentations.filter(y => y.id !== x.id);
+      if (x.issue === "chute" && !c.tentations.some(y => y.issue === "chute" && y.date === x.date)) c.chutes = c.chutes.filter(d => d !== x.date);
+      sauver(); rendreLiberte();
+    }, "secondaire");
+    suppr.style.float = "right"; suppr.style.padding = "2px 8px";
+    const details = [...(x.emotions || []), ...(x.lieux || []), ...(x.declencheurs || [])];
+    sec.append(el("div", { className: "entree" }, suppr,
+      el("small", { textContent: `${dateFr(new Date(x.date + "T12:00:00"))} à ${x.heure}` }),
+      el("p", { textContent: (x.issue === "tenu" ? "💪 Tenu bon" : "🤍 Chute") + (details.length ? " · " + details.join(", ") : "") + (x.note ? "\n" + x.note : "") })));
+  }
+  return sec;
+}
+
+function reglagesLiberte() {
+  const c = etat.combat;
+  const sec = el("section", {}, el("h2", { textContent: "⚙️ Réglages" }));
+
+  const debut = el("input", { type: "date", value: c.debut });
+  debut.onchange = () => { if (debut.value) { c.debut = debut.value; sauver(); rendreLiberte(); } };
+  sec.append(el("div", { className: "ligne" }, el("span", { textContent: "Début de mon chemin :" }), debut));
+
+  const lettre = el("textarea", { value: c.lettre, placeholder: "Pourquoi tu mènes ce combat, l'homme que tu veux devenir, ce que tu ressens après une chute, ce que tu veux te dire au moment difficile…" });
+  sec.append(el("h4", { textContent: "✉️ Lettre à moi-même" }),
+    el("p", { className: "aide", textContent: "Écris-la un jour où tu vas bien. Elle s'affichera dans le bouton 🆘, au moment difficile." }),
+    lettre, bouton("Enregistrer la lettre", () => { c.lettre = lettre.value; sauver(); toast("Lettre enregistrée ✉️"); }));
+
+  sec.append(el("h4", { textContent: "📞 Mes personnes de confiance" }),
+    el("p", { className: "aide", textContent: "Un ami, un prêtre, un accompagnateur. Elles apparaîtront dans le bouton 🆘." }));
+  const champs = c.contacts.map(x => {
+    const n = el("input", { value: x.nom, placeholder: "Prénom" });
+    const t = el("input", { type: "tel", value: x.tel, placeholder: "Téléphone" });
+    sec.append(el("div", { className: "ligne" }, n, t));
+    return [n, t];
+  });
+  sec.append(bouton("Enregistrer les contacts", () => {
+    c.contacts = champs.map(([n, t]) => ({ nom: n.value.trim(), tel: t.value.trim() }));
+    sauver(); toast("Contacts enregistrés 📞");
+  }));
+
+  sec.append(el("h4", { textContent: "🔒 Code de verrouillage" }));
+  if (c.pin) {
+    sec.append(el("p", { textContent: "L'espace Liberté est protégé par un code." }),
+      bouton("Retirer le code", () => { if (confirm("Retirer le code ?")) { c.pin = null; sauver(); rendreLiberte(); } }, "secondaire"));
+  } else {
+    const p = el("input", { type: "password", inputMode: "numeric", placeholder: "4 à 8 chiffres", autocomplete: "new-password" });
+    sec.append(el("div", { className: "ligne" }, p, bouton("Activer le code", async () => {
+      if (!/^\d{4,8}$/.test(p.value)) return toast("Choisis un code de 4 à 8 chiffres");
+      c.pin = await hacher(p.value); deverrouille = true; sauver(); toast("Code activé 🔒"); rendreLiberte();
+    })));
+  }
+  sec.append(el("p", { className: "aide", textContent: "Le code protège des regards indiscrets, pas d'un expert. Le bouton 🆘 reste accessible sans code pour servir en urgence. Ton fichier d'export contient aussi ces données : garde-le en lieu sûr." }),
+    el("hr", { style: "border:none;border-top:1px solid #eee" }),
+    bouton("Remettre à zéro l'espace Liberté", () => {
+      if (confirm("Effacer compteur, tentations, lettre, contacts et code ? (Ton journal n'est pas touché.)")) { etat.combat = combatVide(); sauver(); rendreLiberte(); }
+    }, "secondaire"));
+  return sec;
+}
+
+/* ---------- 🌿 Le Fil ---------- */
+const PAUSE_FIL = 30 * 60000;
+let filNoeud = null;
+
+function carte(type, n, pools) {
+  const c = el("div", { className: "carte c-" + type });
+  const entete = t => el("div", { className: "type", textContent: `${n}/10 · ${t}` });
+  if (type === "verset") {
+    const v = pools.verset.pop(), { texte, ref } = texteVerset(v);
+    c.append(entete("Parole de Dieu"), el("p", { className: "gros", textContent: texte ? `« ${texte} »` : "Ouvre ta Bible à ce passage." }),
+      el("p", { className: "ref", textContent: ref }), bouton("Lire le chapitre", () => allerA(v[0], v[1]), "secondaire"));
+  } else if (type === "saint") {
+    const s = pools.saint.pop();
+    c.append(entete("Un saint pour toi"), el("h3", { textContent: s.nom }), el("p", { textContent: s.vie }),
+      el("p", { className: "gros", textContent: s.mot ? `« ${s.mot} »` : "" }));
+  } else if (type === "defi") {
+    c.append(entete("Défi du réel"), el("p", { className: "gros", textContent: pools.defi.pop() }),
+      el("p", { textContent: "Ferme l'appli et fais-le maintenant. Le fil t'attendra 😉" }));
+  } else if (type === "question") {
+    const q = pools.question.pop();
+    c.append(entete("Question pour ton journal"), el("p", { className: "gros", textContent: q }),
+      bouton("✍ Répondre dans mon journal", () => { vue("parole"); definirPassage("Question : " + q); $("texte").focus(); }));
+  } else if (type === "priere") {
+    const [nom, txt] = pools.priere.pop();
+    c.append(entete("Prière"), el("h3", { textContent: nom }), el("p", { className: "priere", textContent: txt }));
+  } else if (type === "mystere") {
+    const [nom, liste] = mysteresDuJour();
+    c.append(entete("Chapelet"), el("h3", { textContent: `Les mystères ${nom} du jour` }),
+      el("ol", {}, ...liste.map(m => el("li", { textContent: m }))), bouton("📿 Prier une dizaine", () => dizaine()));
+  } else if (type === "evangile") {
+    c.append(entete("Évangile du jour"), el("p", { textContent: "Chargement…" }));
+    aelf("messes", aujourdhui(), $("zone").value).then(j => {
+      const ev = (j.messes || []).flatMap(m => m.lectures || []).find(l => l.type === "evangile");
+      if (!ev) throw 0;
+      const txt = htmlVersTexte(ev.contenu);
+      c.replaceChildren(entete("Évangile du jour"), el("h3", { textContent: ev.ref || "" }),
+        el("p", { style: "text-align:left", textContent: txt.length > 450 ? txt.slice(0, 450) + "…" : txt }),
+        bouton("Lire en entier", () => { vue("parole"); onglet(true); }));
+    }).catch(() => {
+      c.replaceChildren(...[...carte("verset", n, { verset: [auHasard(VERSETS)] }).childNodes]);
+    });
+  }
+  return c;
+}
+
+function rendreFil() {
+  const box = $("vue-fil");
+  const fin = +(localStorage.getItem("bj-fil-fin") || 0);
+  if (Date.now() - fin < PAUSE_FIL) {
+    filNoeud = null;
+    const retour = new Date(fin + PAUSE_FIL).toTimeString().slice(0, 5).replace(":", " h ");
+    box.replaceChildren(el("section", { style: "text-align:center" },
+      el("h2", { textContent: "🌿 Ton fil se repose" }),
+      el("p", { textContent: `Tu as vu tes 10 cartes. Le fil revient à ${retour}. En attendant, la vraie vie t'attend !` }),
+      el("p", { className: "priere", textContent: "Défi : " + auHasard(DEFIS) }),
+      el("div", { className: "ligne", style: "justify-content:center" },
+        bouton("📿 Prier une dizaine", () => dizaine()),
+        bouton("✍ Écrire dans mon journal", () => { vue("parole"); $("texte").focus(); }, "secondaire"),
+        bouton("⛪ Évangile du jour", () => { vue("parole"); onglet(true); }, "secondaire"))));
+    return;
+  }
+  if (!filNoeud) {
+    const fil = el("div", { className: "fil" });
+    const pools = { verset: melanger(VERSETS), saint: melanger(SAINTS), defi: melanger(DEFIS), question: melanger(QUESTIONS),
+      priere: melanger(Object.entries(PRIERES).filter(([n]) => n !== "Gloire au Père" && n !== "Ô mon Jésus")) };
+    ["verset", "saint", "defi", "question", "priere", "verset", "mystere", "evangile", "defi", "question"]
+      .forEach((t, i) => fil.append(carte(t, i + 1, pools)));
+    const finCarte = el("div", { className: "carte c-fin" },
+      el("h2", { style: "color:#fff", textContent: "🌿 C'est tout pour maintenant." }),
+      el("p", { className: "gros", textContent: "Tu as nourri ton âme. Maintenant, pose ton téléphone et va vivre ta vie." }),
+      bouton("✍ Écrire dans mon journal", () => { vue("parole"); $("texte").focus(); }, "secondaire"),
+      bouton("📿 Une dizaine", () => dizaine(), "secondaire"));
+    fil.append(finCarte);
+    new IntersectionObserver((e, obs) => {
+      if (e[0].isIntersecting) { localStorage.setItem("bj-fil-fin", Date.now()); filNoeud = null; obs.disconnect(); }
+    }, { root: fil, threshold: 0.6 }).observe(finCarte);
+    filNoeud = el("div", {}, el("p", { className: "aide", style: "text-align:center", textContent: "Fais défiler 👆 · 10 cartes, puis le fil s'arrête." }), fil);
+  }
+  box.replaceChildren(filNoeud);
+}
+
+/* ---------- 📿 Dizaine guidée ---------- */
+function dizaine(indice) {
+  const [nom, liste] = mysteresDuJour();
+  if (indice === undefined) {
+    ouvrirModale(el("h2", { textContent: "📿 Une dizaine" }),
+      el("p", { textContent: `Aujourd'hui : mystères ${nom}. Choisis un mystère :` }),
+      ...liste.map((m, i) => el("p", {}, bouton(`${i + 1}. ${m}`, () => dizaine(i), "secondaire"))));
+    return;
+  }
+  const etapes = [["Notre Père", PRIERES["Notre Père"]],
+    ...Array.from({ length: 10 }, (_, i) => [`Je vous salue Marie (${i + 1}/10)`, PRIERES["Je vous salue Marie"]]),
+    ["Gloire au Père", PRIERES["Gloire au Père"]], ["Ô mon Jésus", PRIERES["Ô mon Jésus"]]];
+  let n = 0;
+  const titre = el("h3"), texte = el("p", { className: "priere" });
+  const suiv = bouton("Suivant ▶", () => { n++; montrer(); });
+  suiv.style.width = "100%"; suiv.style.padding = "1rem";
+  const montrer = () => {
+    if (n >= etapes.length) {
+      titre.textContent = "Amen 🙏"; texte.textContent = "Dizaine terminée. Marie, garde mon cœur pur.";
+      suiv.textContent = "Fermer"; suiv.onclick = fermerModale; return;
+    }
+    titre.textContent = etapes[n][0]; texte.textContent = etapes[n][1];
+  };
+  ouvrirModale(el("h2", { textContent: `📿 ${liste[indice]}` }),
+    el("p", { className: "aide", textContent: "Prends quelques secondes pour imaginer la scène, puis prie lentement." }), titre, texte, suiv);
+  montrer();
+}
+
+/* ---------- 🌙 Rituels ---------- */
+function rendreRituels() {
+  const box = $("vue-rituels"); box.replaceChildren();
+  const auj = aujourdhui(), js = jourSoir(), R = etat.rituels;
+
+  const matin = el("section", {}, el("h2", { textContent: "☀️ Le matin (2 minutes)" }));
+  if (auj in R.matin) {
+    matin.append(el("p", { textContent: "✅ Tu as confié ta journée à Dieu." }),
+      R.matin[auj] ? el("p", { className: "priere", textContent: "Ton intention : " + R.matin[auj] }) : "");
+  } else {
+    const intention = el("input", { placeholder: "Mon intention pour aujourd'hui…", style: "width:100%" });
+    const sugg = ["Je pose mon téléphone hors de la chambre ce soir", "Je ne prends pas mon téléphone au lit", "J'appelle un ami",
+      "Je garde mon regard", "Je prie une dizaine", "Je me couche avant 23 h"];
+    matin.append(el("h4", { textContent: "Offrande de la journée" }), el("p", { className: "priere", textContent: OFFRANDE }),
+      el("h4", { textContent: "Le verset du jour" }), blocVerset(VERSETS[jourNum(auj) % VERSETS.length]),
+      el("h4", { textContent: "Mon intention" }), intention,
+      el("div", { className: "chips", style: "margin:.5rem 0" }, ...sugg.map(s => bouton(s, () => intention.value = s, "chip"))),
+      bouton("Je confie ma journée à Dieu ✅", () => {
+        R.matin[auj] = intention.value.trim(); sauver(); rendreRituels(); toast("Belle journée ! Que Dieu te garde ☀️");
+      }));
+  }
+  box.append(matin);
+
+  const soir = el("section", {}, el("h2", { textContent: "🌙 Le soir : examen de conscience (5 minutes)" }));
+  if (R.soir[js]) {
+    soir.append(el("p", { textContent: "✅ Examen fait. Pose ton téléphone, bonne nuit 🌙" }));
+  } else {
+    if (R.matin[js]) soir.append(el("p", { className: "priere", textContent: "Ce matin, ton intention était : " + R.matin[js] }));
+    const reponses = [];
+    for (const [t, q, champ] of EXAMEN) {
+      soir.append(el("h4", { textContent: t }), el("p", { className: "aide", textContent: q }));
+      if (champ) { const ta = el("textarea", { style: "min-height:60px" }); reponses.push([t, ta]); soir.append(ta); }
+    }
+    const garder = el("input", { type: "checkbox", checked: true });
+    soir.append(el("p", { className: "aide", textContent: "Tu as été tenté aujourd'hui ? Note-le aussi dans 🛡 Liberté." }),
+      el("label", { className: "ligne" }, garder, "Garder une trace dans mon journal"),
+      bouton("Terminer et confier ma nuit 🌙", () => {
+        R.soir[js] = true;
+        const texte = reponses.filter(([, ta]) => ta.value.trim()).map(([t, ta]) => `${t}\n${ta.value.trim()}`).join("\n\n");
+        if (garder.checked && texte) {
+          etat.entrees.unshift({ id: Date.now(), date: dateFr(new Date()), passage: "Examen du soir", texte, tags: ["examen"], dessin: null });
+          afficher();
+        }
+        sauver(); rendreRituels(); toast("Bonne nuit. Que le Seigneur te garde 🌙");
+      }));
+  }
+  box.append(soir);
+
+  const [nom] = mysteresDuJour();
+  box.append(el("section", {}, el("h2", { textContent: "📿 Le chapelet" }),
+    el("p", { textContent: `Aujourd'hui : mystères ${nom}. Une dizaine prend 5 minutes, et tu peux la prier en marchant.` }),
+    bouton("Prier une dizaine", () => dizaine())));
+
+  let m7 = 0, s7 = 0;
+  for (let i = 0; i < 7; i++) { const d = ajouterJours(auj, -i); if (d in R.matin) m7++; if (R.soir[d]) s7++; }
+  box.append(el("section", {}, el("h2", { textContent: "📅 Ma semaine" }),
+    el("p", { textContent: `☀️ Matins confiés : ${m7}/7 · 🌙 Examens du soir : ${s7}/7` })));
+
+  const r = etat.reglages;
+  const actif = el("input", { type: "checkbox", checked: r.couvreFeu });
+  const deb = el("input", { type: "time", value: r.cfDebut }), fin = el("input", { type: "time", value: r.cfFin });
+  const maj = () => { r.couvreFeu = actif.checked; r.cfDebut = deb.value || "23:00"; r.cfFin = fin.value || "06:00"; sauver(); toast("Couvre-feu enregistré 🌙"); };
+  actif.onchange = deb.onchange = fin.onchange = maj;
+  box.append(el("section", {}, el("h2", { textContent: "🌃 Couvre-feu" }),
+    el("p", { className: "aide", textContent: "Pendant ces heures, l'appli t'invite à poser le téléphone, avec une prière du soir." }),
+    el("label", { className: "ligne" }, actif, "Activer le couvre-feu"),
+    el("div", { className: "ligne" }, "De", deb, "à", fin)));
+}
+
+/* ---------- 🌃 Couvre-feu ---------- */
+let snoozeCF = +(sessionStorage.getItem("bj-snooze") || 0);
+function enCouvreFeu() {
+  const r = etat.reglages;
+  if (!r || !r.couvreFeu) return false;
+  const m = heureMaintenant();
+  return r.cfDebut <= r.cfFin ? (m >= r.cfDebut && m < r.cfFin) : (m >= r.cfDebut || m < r.cfFin);
+}
+function reporterCF(minutes) {
+  snoozeCF = Date.now() + minutes * 60000; sessionStorage.setItem("bj-snooze", snoozeCF); $("couvreFeu").hidden = true;
+}
+function verifierCouvreFeu() {
+  const o = $("couvreFeu");
+  if (enCouvreFeu() && Date.now() > snoozeCF) { if (o.hidden) afficherCouvreFeu(); }
+  else o.hidden = true;
+}
+function afficherCouvreFeu() {
+  const o = $("couvreFeu");
+  const boutons = el("div", { className: "ligne", style: "justify-content:center" });
+  if (!etat.rituels.soir[jourSoir()]) boutons.append(bouton("🌙 Faire mon examen du soir", () => { reporterCF(20); vue("rituels"); }));
+  boutons.append(
+    bouton("🙏 Bonne nuit", () => o.replaceChildren(
+      el("div", { style: "font-size:4rem;margin-top:20vh" , textContent: "🌙" }),
+      el("h2", { style: "color:#e8e6f0", textContent: "Pose ton téléphone hors de ta chambre." }),
+      el("p", { textContent: "Que le Seigneur te bénisse et te garde cette nuit." })), "secondaire"),
+    bouton("Encore 10 minutes", () => reporterCF(10), "secondaire"),
+    bouton("🆘", () => { reporterCF(20); sos(); }));
+  o.replaceChildren(
+    el("div", { style: "font-size:3.5rem", textContent: "🌙" }),
+    el("h2", { style: "color:#e8e6f0", textContent: "Il est l'heure de poser le téléphone." }),
+    el("p", { textContent: "La nuit est le moment le plus fragile. Confie-la à Dieu :" }),
+    el("p", { className: "priere", textContent: PRIERE_SOIR }), boutons);
+  o.hidden = false;
 }
 
 /* ---------- Interface ---------- */
@@ -420,6 +1210,8 @@ function onglet(messe) {
   if (messe && !$("messe").childNodes.length) afficherMesse();
   if (!messe && BIBLE.length) lire();
 }
+VUES.forEach(v => $("nav-" + v).onclick = () => vue(v));
+$("btnSOS").onclick = sos;
 $("ongletBible").onclick = () => onglet(false);
 $("ongletMesse").onclick = () => onglet(true);
 $("btnMesse").onclick = afficherMesse;
@@ -441,6 +1233,10 @@ $("zone").onchange = () => {
   prefs.zone = $("zone").value; sauverPrefs(); chargerLiturgie();
   if (!$("vueMesse").hidden) afficherMesse(); else $("messe").innerHTML = "";
 };
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) { deverrouille = false; if (vueActive === "liberte") rendreLiberte(); }
+  else verifierCouvreFeu();
+});
 
 /* ---------- Démarrage ---------- */
 (async () => {
@@ -448,10 +1244,11 @@ $("zone").onchange = () => {
   $("zone").value = prefs.zone || "france";
   $("dateMesse").value = iso(new Date());
   effacerDessin();
-  const ancien = localStorage.getItem("bj-data"); // reprise des données de la toute première version
+  const ancien = localStorage.getItem("bj-data");
   etat = (await idb.get("journal").catch(() => null)) || (ancien ? JSON.parse(ancien) : etat);
-  etat.surlignages ||= {}; etat.entrees ||= [];
+  normaliser();
   afficher(); chargerLiturgie();
+  verifierCouvreFeu(); setInterval(verifierCouvreFeu, 30000);
   try {
     BIBLE = await chargerBible();
     $("livre").innerHTML = "";
