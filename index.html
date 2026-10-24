@@ -617,40 +617,44 @@ function normaliser() {
   etat.reglages = Object.assign({ couvreFeu: true, cfDebut: "23:00", cfFin: "06:00" }, etat.reglages || {});
 }
 
-/* ---------- Versets tirés de la Bible Crampon ---------- */
+const cleNom = s => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+  .replace(/\s*$.*$\s*$/, "").replace(/^iii /, "3 ").replace(/^ii /, "2 ").replace(/^i /, "1 ").trim();
+const ALIAS_EN = {
+  "1 corinthiens":"1 corinthians", "2 corinthiens":"2 corinthians", "jacques":"james", "philippiens":"philippians",
+  "matthieu":"matthew", "galates":"galatians", "jean":"john", "romains":"romans", "isaie":"isaiah",
+  "2 timothee":"2 timothy", "hebreux":"hebrews", "ephesiens":"ephesians", "1 pierre":"1 peter", "1 jean":"1 john",
+  "lamentations":"lamentations", "michee":"micah", "proverbes":"proverbs", "luc":"luke"
+};
+function trouverLivre(livre) {
+  const k = cleNom(livre), en = ALIAS_EN[k];
+  return BIBLE.findIndex(b => cleNom(b.fr) === k || cleNom(b.nom) === k || (en && cleNom(b.nom) === en));
+}
 function texteVerset([livre, ch, vv]) {
-  const l = BIBLE.find(b => b.fr === livre);
-  const [a, z = a] = vv.split("-").map(Number);
+  const ref = `${livre} ${ch}, ${vv}`;
+  if (!BIBLE.length) return { texte: "", ref: ref + " (Bible pas encore charg\u00E9e)" };
+  const i = trouverLivre(livre);
+  if (i < 0) return { texte: "", ref: ref + " (livre introuvable)" };
+  const chap = BIBLE[i].chapitres[ch];
+  if (!chap) return { texte: "", ref: ref + " (chapitre introuvable)" };
+  const [a, z = a] = String(vv).split("-").map(Number);
   const morceaux = [];
-  if (l && l.chapitres[ch]) for (let v = a; v <= z; v++) if (l.chapitres[ch][v]) morceaux.push(l.chapitres[ch][v].trim());
-  return { texte: morceaux.join(" "), ref: `${livre} ${ch}, ${vv}` };
+  for (let v = a; v <= z; v++) if (chap[v]) morceaux.push(String(chap[v]).trim());
+  return { texte: morceaux.join(" "), ref: morceaux.length ? ref : ref + " (verset introuvable)" };
 }
 function blocVerset(v) {
   const { texte, ref } = texteVerset(v);
   return el("div", {},
-    el("p", { className: "priere", textContent: texte ? `« ${texte} »` : "Ouvre ta Bible à ce passage." }),
-    el("p", { style: "text-align:right;font-weight:bold;margin:.2rem 0" }, ref + " ", bouton("Lire le chapitre", () => allerA(v[0], v[1]), "secondaire")));
+    el("p", { className: "priere", textContent: texte ? "\u00AB " + texte + " \u00BB" : "Ouvre ta Bible \u00E0 ce passage." }),
+    el("p", { style: "text-align:right;font-weight:bold;margin:.2rem 0" }, ref + " ",
+      bouton("Lire le chapitre", () => allerA(v[0], v[1]), "secondaire")));
 }
 function allerA(livre, ch) {
-  const i = BIBLE.findIndex(b => b.fr === livre);
-  if (i < 0) return;
+  const i = trouverLivre(livre);
+  if (i < 0) return toast("Livre introuvable : " + livre);
   fermerModale(); vue("parole"); onglet(false);
   $("livre").value = i; remplirChapitres(); $("chapitre").value = ch; lire();
 }
 
-/* ---------- Navigation ---------- */
-const VUES = ["parole", "fil", "liberte", "rituels"];
-let vueActive = "parole";
-let deverrouille = false;
-function vue(nom) {
-  if (vueActive === "liberte" && nom !== "liberte") deverrouille = false;
-  vueActive = nom;
-  for (const v of VUES) { $("vue-" + v).hidden = v !== nom; $("nav-" + v).classList.toggle("actif", v === nom); }
-  if (nom === "fil") rendreFil();
-  if (nom === "liberte") rendreLiberte();
-  if (nom === "rituels") rendreRituels();
-  window.scrollTo(0, 0);
-}
 
 /* ---------- Fenêtre modale ---------- */
 let nettoyageModale = null;
