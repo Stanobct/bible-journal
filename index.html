@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#7a2e3a">
+<title>Mon Bible Journal</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✝️</text></svg>">
+<style>
+  :root { --papier:#fdf8f0; --encre:#3b3024; --accent:#7a2e3a; --liturgie:#7a2e3a; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Georgia, serif; background:var(--papier); color:var(--encre); }
+  header { background:var(--accent); color:#fff; padding:1rem; text-align:center; border-bottom:8px solid var(--liturgie); }
+  header h1 { margin:0 0 .3rem; font-size:1.6rem; }
+  #liturgie { font-size:.9rem; opacity:.95; }
+  main { max-width:1150px; margin:auto; padding:1rem; display:grid; gap:1.5rem; grid-template-columns:1fr 1fr; }
+  @media (max-width:850px){ main { grid-template-columns:1fr; } }
+  section { background:#fff; border-radius:12px; padding:1rem; box-shadow:0 2px 8px rgba(0,0,0,.08); min-width:0; }
+  h2 { margin-top:0; color:var(--accent); }
+  select, input, textarea, button { font:inherit; padding:.45rem .6rem; border:1px solid #d6c7b2; border-radius:8px; background:#fff; color:var(--encre); }
+  button { background:var(--accent); color:#fff; border:none; cursor:pointer; }
+  button.secondaire, label.secondaire { background:#e9dfd1; color:var(--encre); border-radius:8px; padding:.45rem .6rem; cursor:pointer; }
+  .ligne { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:.7rem; align-items:center; }
+  .onglets { display:flex; gap:.5rem; margin-bottom:1rem; }
+  .onglets button { flex:1; background:#e9dfd1; color:var(--encre); }
+  .onglets button.actif { background:var(--accent); color:#fff; }
+  .texte { max-height:62vh; overflow-y:auto; line-height:1.75; padding-right:.3rem; }
+  .verset { cursor:pointer; padding:2px 3px; border-radius:4px; }
+  .verset:hover { outline:1px dashed #d6c7b2; }
+  .verset sup { color:var(--accent); font-weight:bold; margin-right:3px; }
+  .jaune{background:#fff3a3;} .vert{background:#c8f0c0;} .bleu{background:#c4e1ff;} .rose{background:#ffd0e0;}
+  .palette button { width:34px; height:34px; padding:0; border-radius:50%; border:2px solid transparent; color:var(--encre); }
+  .palette button.actif { border-color:var(--encre); }
+  .lecture h4 { color:var(--accent); margin:1.2rem 0 .3rem; }
+  .lecture .refrain { font-style:italic; font-weight:bold; }
+  .lecture p { white-space:pre-wrap; margin:.2rem 0; }
+  textarea { width:100%; min-height:140px; resize:vertical; }
+  #zoneDessin { margin:.5rem 0; }
+  canvas { width:100%; border:1px dashed #d6c7b2; border-radius:8px; touch-action:none; background:#fff; }
+  .entree { border-left:4px solid var(--accent); padding:.5rem .8rem; margin:.8rem 0; background:var(--papier); border-radius:0 8px 8px 0; }
+  .entree small { color:#8a7a66; }
+  .entree p { white-space:pre-wrap; }
+  .entree img { max-width:100%; border-radius:6px; margin:.3rem 0; }
+  .tag { display:inline-block; background:#e9dfd1; border-radius:10px; padding:0 8px; font-size:.8rem; margin-right:4px; }
+  footer { text-align:center; font-size:.8rem; color:#8a7a66; padding:1rem; }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <h1>✝ Mon Bible Journal</h1>
+  <div id="liturgie"></div>
+</header>
+
+<main>
+  <!-- ===== LECTURE ===== -->
+  <section>
+    <div class="onglets">
+      <button id="ongletBible" class="actif">📖 Bible</button>
+      <button id="ongletMesse">⛪ Messe du jour</button>
+    </div>
+
+    <div id="vueBible">
+      <div class="ligne">
+        <select id="livre"><option>Chargement…</option></select>
+        <select id="chapitre"></select>
+        <button class="secondaire" id="prec" title="Chapitre précédent">◀</button>
+        <button class="secondaire" id="suiv" title="Chapitre suivant">▶</button>
+      </div>
+      <div class="ligne palette">
+        <button data-o="jaune" class="jaune actif" title="Surligner en jaune"></button>
+        <button data-o="vert" class="vert" title="Surligner en vert"></button>
+        <button data-o="bleu" class="bleu" title="Surligner en bleu"></button>
+        <button data-o="rose" class="rose" title="Surligner en rose"></button>
+        <button data-o="" class="secondaire" title="Effacer le surlignage">✕</button>
+        <button data-o="citer" class="secondaire" title="Citer le verset dans le journal">❝</button>
+      </div>
+      <h3 id="titre"></h3>
+      <div id="versets" class="texte">Chargement de la Bible…</div>
+    </div>
+
+    <div id="vueMesse" hidden>
+      <div class="ligne">
+        <input type="date" id="dateMesse">
+        <button id="btnMesse">Afficher</button>
+      </div>
+      <div id="messe" class="texte"></div>
+    </div>
+  </section>
+
+  <!-- ===== JOURNAL ===== -->
+  <section>
+    <h2>Journal</h2>
+    <small id="passageActuel"></small>
+    <textarea id="texte" placeholder="Ce que la Parole me dit aujourd'hui…"></textarea>
+    <div class="ligne" style="margin-top:.5rem">
+      <input id="tags" placeholder="tags : foi, prière, Marie…" style="flex:1">
+      <button class="secondaire" id="btnDessin">🎨 Dessiner</button>
+    </div>
+    <div id="zoneDessin" hidden>
+      <div class="ligne">
+        <input type="color" id="crayon" value="#7a2e3a" title="Couleur">
+        <input type="range" id="epaisseur" min="1" max="20" value="4" title="Épaisseur">
+        <button class="secondaire" id="btnEffacerDessin">Effacer</button>
+      </div>
+      <canvas id="dessin" width="700" height="350"></canvas>
+    </div>
+    <div class="ligne"><button id="btnSauver" style="flex:1">💾 Enregistrer la méditation</button></div>
+    <hr style="border:none;border-top:1px solid #eee">
+    <div class="ligne"><input id="recherche" placeholder="🔍 Rechercher dans mon journal" style="flex:1"></div>
+    <div class="ligne">
+      <button class="secondaire" id="btnExport">⬇ Exporter</button>
+      <label class="secondaire">⬆ Importer <input type="file" id="fichier" accept=".json" hidden></label>
+    </div>
+    <div id="entrees"></div>
+  </section>
+</main>
+
+<footer>
+  Calendrier :
+  <select id="zone">
+    <option value="france">France</option>
+    <option value="belgique">Belgique</option>
+    <option value="canada">Canada</option>
+    <option value="afrique">Afrique</option>
+    <option value="romain">Romain</option>
+  </select>
+  <p>Texte biblique : traduction du chanoine A. Crampon, édition révisée de 1923 (domaine public).<br>
+  Lectures et calendrier liturgique : © <a href="https://www.aelf.org" target="_blank" rel="noopener">AELF</a>, usage personnel et non commercial.<br>
+  Ton journal reste uniquement sur cet appareil : pense à l'exporter régulièrement.</p>
+</footer>
+
+<script>
+/* ---------- Outils ---------- */
+const $ = id => document.getElementById(id);
+const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const dateFr = (d, style="long") => d.toLocaleDateString("fr-FR", { dateStyle: style });
+const el = (tag, props = {}, ...enfants) => { const e = Object.assign(document.createElement(tag), props); e.append(...enfants); return e; };
+
+/* ---------- Stockage (IndexedDB : plus de place que localStorage) ---------- */
+const idb = (() => {
+  let dbp;
+  const db = () => dbp ||= new Promise((ok, ko) => {
+    const r = indexedDB.open("bible-journal", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("kv");
+    r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error);
+  });
+  const tx = async (mode, fn) => {
+    const d = await db();
+    return new Promise((ok, ko) => {
+      const t = d.transaction("kv", mode); const req = fn(t.objectStore("kv"));
+      t.oncomplete = () => ok(req.result); t.onerror = () => ko(t.error);
+    });
+  };
+  return { get: k => tx("readonly", s => s.get(k)), set: (k, v) => tx("readwrite", s => s.put(v, k)) };
+})();
+
+let etat = { surlignages: {}, entrees: [] };
+let BIBLE = [];
+let passage = "";
+let outil = "jaune";
+const prefs = JSON.parse(localStorage.getItem("bj-prefs") || "{}");
+const sauverPrefs = () => localStorage.setItem("bj-prefs", JSON.stringify(prefs));
+const sauver = () => idb.set("journal", etat).catch(e => alert("Erreur d'enregistrement : " + e.message));
+const definirPassage = p => { passage = p; $("passageActuel").textContent = p ? "📌 " + p : ""; };
+
+/* ---------- Bible Crampon ---------- */
+const SOURCES = [
+  "crampon.json", // facultatif : copie locale dans le dépôt
+  "https://raw.githubusercontent.com/scrollmapper/bible_databases/master/formats/json/FreCrampon.json",
+  "https://cdn.jsdelivr.net/gh/scrollmapper/bible_databases@master/formats/json/FreCrampon.json"
+];
+const NOMS_FR = {
+  "genesis":"Genèse","exodus":"Exode","leviticus":"Lévitique","numbers":"Nombres","deuteronomy":"Deutéronome",
+  "joshua":"Josué","judges":"Juges","ruth":"Ruth","1 samuel":"1 Samuel","2 samuel":"2 Samuel",
+  "1 kings":"1 Rois","2 kings":"2 Rois","1 chronicles":"1 Chroniques","2 chronicles":"2 Chroniques",
+  "ezra":"Esdras","nehemiah":"Néhémie","tobit":"Tobie","tobias":"Tobie","judith":"Judith","esther":"Esther",
+  "1 maccabees":"1 Maccabées","2 maccabees":"2 Maccabées","job":"Job","psalms":"Psaumes","proverbs":"Proverbes",
+  "ecclesiastes":"Qohélet (Ecclésiaste)","song of solomon":"Cantique des cantiques","song of songs":"Cantique des cantiques",
+  "wisdom":"Sagesse","wisdom of solomon":"Sagesse","sirach":"Siracide (Ecclésiastique)","ecclesiasticus":"Siracide (Ecclésiastique)",
+  "isaiah":"Isaïe","jeremiah":"Jérémie","lamentations":"Lamentations","baruch":"Baruch","ezekiel":"Ézéchiel",
+  "daniel":"Daniel","hosea":"Osée","joel":"Joël","amos":"Amos","obadiah":"Abdias","jonah":"Jonas","micah":"Michée",
+  "nahum":"Nahum","habakkuk":"Habacuc","zephaniah":"Sophonie","haggai":"Aggée","zechariah":"Zacharie","malachi":"Malachie",
+  "matthew":"Matthieu","mark":"Marc","luke":"Luc","john":"Jean","acts":"Actes des Apôtres","romans":"Romains",
+  "1 corinthians":"1 Corinthiens","2 corinthians":"2 Corinthiens","galatians":"Galates","ephesians":"Éphésiens",
+  "philippians":"Philippiens","colossians":"Colossiens","1 thessalonians":"1 Thessaloniciens","2 thessalonians":"2 Thessaloniciens",
+  "1 timothy":"1 Timothée","2 timothy":"2 Timothée","titus":"Tite","philemon":"Philémon","hebrews":"Hébreux",
+  "james":"Jacques","1 peter":"1 Pierre","2 peter":"2 Pierre","1 john":"1 Jean","2 john":"2 Jean","3 john":"3 Jean",
+  "jude":"Jude","revelation":"Apocalypse","revelation of john":"Apocalypse"
+};
+const nomFr = n => NOMS_FR[String(n).toLowerCase().trim()
+  .replace(/^iii /,"3 ").replace(/^ii /,"2 ").replace(/^i /,"1 ")] || n;
+
+function analyser(brut) {
+  const livres = new Map();
+  const ajouter = (nom, c, v, t) => {
+    if (!livres.has(nom)) livres.set(nom, {});
+    (livres.get(nom)[c] ||= {})[v] = String(t);
+  };
+  if (Array.isArray(brut.books)) {
+    for (const b of brut.books) for (const c of b.chapters) for (const v of c.verses) ajouter(b.name, c.chapter, v.verse, v.text);
+  } else {
+    for (const v of (Array.isArray(brut) ? brut : brut.verses || [])) ajouter(v.book_name || v.book, v.chapter, v.verse, v.text);
+  }
+  return [...livres].map(([nom, chapitres]) => ({ nom, fr: nomFr(nom), chapitres }));
+}
+
+async function chargerBible() {
+  const cache = await idb.get("bible-crampon").catch(() => null);
+  if (cache && cache.length) return cache;
+  $("versets").textContent = "Téléchargement de la Bible (une seule fois, patience)…";
+  for (const url of SOURCES) {
+    try {
+      const r = await fetch(url);
+      if (!r.ok) continue;
+      const b = analyser(await r.json());
+      if (b.length) { await idb.set("bible-crampon", b).catch(() => {}); return b; }
+    } catch {}
+  }
+  throw new Error("aucune source disponible");
+}
+
+function remplirChapitres() {
+  const l = BIBLE[$("livre").value];
+  $("chapitre").innerHTML = "";
+  Object.keys(l.chapitres).forEach(c => $("chapitre").add(new Option("Chapitre " + c, c)));
+}
+
+function lire() {
+  const l = BIBLE[$("livre").value], c = $("chapitre").value;
+  prefs.livre = $("livre").value; prefs.chapitre = c; sauverPrefs();
+  $("titre").textContent = `${l.fr} ${c}`;
+  definirPassage(`${l.fr} ${c}`);
+  const box = $("versets"); box.innerHTML = "";
+  for (const [v, t] of Object.entries(l.chapitres[c] || {})) {
+    const cle = `${l.nom} ${c}:${v}`;
+    const s = el("span", { className: "verset " + (etat.surlignages[cle] || "") }, el("sup", { textContent: v }), t + " ");
+    s.onclick = () => {
+      if (outil === "citer") return citer(`« ${t.trim()} » (${l.fr} ${c}, ${v})`);
+      if (outil) etat.surlignages[cle] = outil; else delete etat.surlignages[cle];
+      s.className = "verset " + outil; sauver();
+    };
+    box.append(s);
+  }
+  box.scrollTop = 0;
+}
+
+function changerChapitre(d) {
+  const sel = $("chapitre");
+  let i = sel.selectedIndex + d;
+  if (i < 0 || i >= sel.options.length) {
+    const li = +$("livre").value + d;
+    if (li < 0 || li >= BIBLE.length) return;
+    $("livre").value = li; remplirChapitres();
+    i = d > 0 ? 0 : sel.options.length - 1;
+  }
+  sel.selectedIndex = i; lire();
+}
+
+function citer(txt) {
+  const t = $("texte");
+  t.value += (t.value && !t.value.endsWith("\n") ? "\n" : "") + txt + "\n";
+  t.focus();
+}
+
+/* ---------- Liturgie (AELF) ---------- */
+const COULEURS = { vert:"#2e7d32", violet:"#6a1b9a", rouge:"#c62828", blanc:"#c9a227", rose:"#d81b60", noir:"#333" };
+const TYPES = { lecture_1:"Première lecture", psaume:"Psaume", cantique:"Cantique", lecture_2:"Deuxième lecture",
+  lecture_3:"Troisième lecture", sequence:"Séquence", entree_messianique:"Entrée messianique", evangile:"Évangile" };
+const htmlVersTexte = h => new DOMParser()
+  .parseFromString(String(h || "").replace(/<br\s*\/?>/gi, "\n").replace(/<\/p>/gi, "\n\n"), "text/html")
+  .body.textContent.trim();
+
+async function chargerLiturgie() {
+  const auj = new Date();
+  $("liturgie").textContent = dateFr(auj, "full");
+  try {
+    const r = await fetch(`https://api.aelf.org/v1/informations/${iso(auj)}/${$("zone").value}`);
+    if (!r.ok) return;
+    const j = await r.json(), info = j.informations || j;
+    const coul = String(info.couleur || "").toLowerCase();
+    if (COULEURS[coul]) document.documentElement.style.setProperty("--liturgie", COULEURS[coul]);
+    const morceaux = [dateFr(auj, "full"), htmlVersTexte(info.jour_liturgique_nom), htmlVersTexte(info.fete), coul && "couleur : " + coul];
+    $("liturgie").textContent = [...new Set(morceaux.filter(Boolean))].join(" · ");
+  } catch {}
+}
+
+async function afficherMesse() {
+  const d = $("dateMesse").value || iso(new Date()), zone = $("zone").value;
+  const box = $("messe"); box.textContent = "Chargement…";
+  const jour = new Date(d + "T12:00:00");
+  try {
+    const r = await fetch(`https://api.aelf.org/v1/messes/${d}/${zone}`);
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const messes = (await r.json()).messes || [];
+    box.innerHTML = "";
+    const refs = [];
+    for (const m of messes) {
+      if (messes.length > 1) box.append(el("h3", { textContent: m.nom || "Messe" }));
+      for (const l of m.lectures || []) {
+        const bloc = el("div", { className: "lecture" });
+        bloc.append(el("h4", { textContent: (TYPES[l.type] || l.type) + (l.ref ? " — " + l.ref : "") }));
+        if (l.titre) bloc.append(el("p", { innerHTML: "<em></em>" }));
+        if (l.titre) bloc.lastChild.firstChild.textContent = htmlVersTexte(l.titre);
+        if (l.refrain_psalmique) bloc.append(el("p", { className: "refrain", textContent: "R/ " + htmlVersTexte(l.refrain_psalmique) }));
+        bloc.append(el("p", { textContent: htmlVersTexte(l.contenu) }));
+        if (l.ref) {
+          refs.push(l.ref);
+          const b = el("button", { className: "secondaire", textContent: "📝 Méditer ce texte" });
+          b.onclick = () => { definirPassage(`${TYPES[l.type] || l.type} — ${l.ref} (messe du ${dateFr(jour)})`); $("texte").focus(); };
+          bloc.append(b);
+        }
+        box.append(bloc);
+      }
+    }
+    if (!box.childNodes.length) throw new Error("aucune lecture");
+    definirPassage(`Messe du ${dateFr(jour)}` + (refs.length ? ` (${refs.join(" ; ")})` : ""));
+  } catch (e) {
+    box.innerHTML = "";
+    box.append(`Lectures indisponibles ici (${e.message}). `,
+      el("a", { href: `https://www.aelf.org/${d}/${zone}/messe`, target: "_blank", rel: "noopener", textContent: "Les lire sur aelf.org ↗" }));
+  }
+}
+
+/* ---------- Dessin ---------- */
+const cv = $("dessin"), ctx = cv.getContext("2d");
+let trace = false, dessinFait = false;
+const pos = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * cv.width / r.width, (e.clientY - r.top) * cv.height / r.height]; };
+function effacerDessin() { ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, cv.width, cv.height); dessinFait = false; }
+cv.onpointerdown = e => { trace = true; dessinFait = true; cv.setPointerCapture(e.pointerId); ctx.beginPath(); ctx.moveTo(...pos(e)); };
+cv.onpointermove = e => {
+  if (!trace) return;
+  const p = pos(e);
+  ctx.strokeStyle = $("crayon").value; ctx.lineWidth = $("epaisseur").value; ctx.lineCap = ctx.lineJoin = "round";
+  ctx.lineTo(...p); ctx.stroke(); ctx.beginPath(); ctx.moveTo(...p);
+};
+cv.onpointerup = cv.onpointercancel = () => trace = false;
+
+/* ---------- Journal ---------- */
+function enregistrer() {
+  const texte = $("texte").value.trim();
+  if (!texte && !dessinFait) return alert("Écris quelque chose ou fais un dessin 🙂");
+  etat.entrees.unshift({
+    id: Date.now(),
+    date: dateFr(new Date()),
+    passage, texte,
+    tags: $("tags").value.split(",").map(t => t.trim()).filter(Boolean),
+    dessin: dessinFait ? cv.toDataURL("image/jpeg", 0.8) : null
+  });
+  $("texte").value = ""; $("tags").value = ""; effacerDessin();
+  sauver(); afficher();
+}
+
+function afficher() {
+  const q = $("recherche").value.toLowerCase();
+  const box = $("entrees"); box.innerHTML = "";
+  const liste = etat.entrees.filter(e => [e.date, e.passage, e.texte, ...(e.tags || [])].join(" ").toLowerCase().includes(q));
+  if (!liste.length) return box.append(el("p", {}, el("em", { textContent: q ? "Aucun résultat." : "Aucune méditation pour l'instant." })));
+  for (const e of liste) {
+    const suppr = el("button", { className: "secondaire", textContent: "🗑", title: "Supprimer", style: "float:right;padding:2px 8px" });
+    suppr.onclick = () => { if (confirm("Supprimer cette méditation ?")) { etat.entrees = etat.entrees.filter(x => x.id !== e.id); sauver(); afficher(); } };
+    const div = el("div", { className: "entree" }, suppr, el("small", { textContent: e.date + (e.passage ? " — " + e.passage : "") }));
+    if (e.texte) div.append(el("p", { textContent: e.texte }));
+    if (e.dessin) div.append(el("img", { src: e.dessin, alt: "Dessin" }));
+    (e.tags || []).forEach(t => div.append(el("span", { className: "tag", textContent: t })));
+    box.append(div);
+  }
+}
+
+function exporter() {
+  const a = el("a", {
+    href: URL.createObjectURL(new Blob([JSON.stringify(etat, null, 2)], { type: "application/json" })),
+    download: `bible-journal-${iso(new Date())}.json`
+  });
+  a.click();
+}
+
+async function importer(e) {
+  try {
+    const d = JSON.parse(await e.target.files[0].text());
+    if (!Array.isArray(d.entrees)) throw 0;
+    if (!confirm("Remplacer le journal actuel par cette sauvegarde ?")) return;
+    etat = { surlignages: d.surlignages || {}, entrees: d.entrees };
+    await sauver(); afficher(); if (BIBLE.length) lire();
+    alert("Journal importé !");
+  } catch { alert("Fichier invalide."); }
+  e.target.value = "";
+}
+
+/* ---------- Interface ---------- */
+function onglet(messe) {
+  $("vueBible").hidden = messe; $("vueMesse").hidden = !messe;
+  $("ongletBible").classList.toggle("actif", !messe); $("ongletMesse").classList.toggle("actif", messe);
+  if (messe && !$("messe").childNodes.length) afficherMesse();
+  if (!messe && BIBLE.length) lire();
+}
+$("ongletBible").onclick = () => onglet(false);
+$("ongletMesse").onclick = () => onglet(true);
+$("btnMesse").onclick = afficherMesse;
+$("livre").onchange = () => { remplirChapitres(); lire(); };
+$("chapitre").onchange = lire;
+$("prec").onclick = () => changerChapitre(-1);
+$("suiv").onclick = () => changerChapitre(1);
+document.querySelectorAll(".palette button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".palette button").forEach(x => x.classList.remove("actif"));
+  b.classList.add("actif"); outil = b.dataset.o;
+});
+$("btnDessin").onclick = () => $("zoneDessin").hidden = !$("zoneDessin").hidden;
+$("btnEffacerDessin").onclick = effacerDessin;
+$("btnSauver").onclick = enregistrer;
+$("recherche").oninput = afficher;
+$("btnExport").onclick = exporter;
+$("fichier").onchange = importer;
+$("zone").onchange = () => {
+  prefs.zone = $("zone").value; sauverPrefs(); chargerLiturgie();
+  if (!$("vueMesse").hidden) afficherMesse(); else $("messe").innerHTML = "";
+};
+
+/* ---------- Démarrage ---------- */
+(async () => {
+  navigator.storage?.persist?.();
+  $("zone").value = prefs.zone || "france";
+  $("dateMesse").value = iso(new Date());
+  effacerDessin();
+  const ancien = localStorage.getItem("bj-data"); // reprise des données de l'ancienne version
+  etat = (await idb.get("journal").catch(() => null)) || (ancien ? JSON.parse(ancien) : etat);
+  etat.surlignages ||= {}; etat.entrees ||= [];
+  afficher(); chargerLiturgie();
+  try {
+    BIBLE = await chargerBible();
+    $("livre").innerHTML = "";
+    BIBLE.forEach((l, i) => $("livre").add(new Option(l.fr, i)));
+    const jean = BIBLE.findIndex(l => l.fr === "Jean");
+    $("livre").value = prefs.livre && BIBLE[prefs.livre] ? prefs.livre : Math.max(jean, 0);
+    remplirChapitres();
+    if (prefs.chapitre && [...$("chapitre").options].some(o => o.value == prefs.chapitre)) $("chapitre").value = prefs.chapitre;
+    lire();
+  } catch (e) {
+    $("versets").textContent = "Impossible de charger la Bible (" + e.message + "). Vérifie ta connexion, ou ajoute le fichier crampon.json dans ton dépôt, à côté d'index.html.";
+  }
+})();
+</script>
+</body>
+</html>
