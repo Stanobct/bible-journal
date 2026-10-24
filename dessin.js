@@ -58,11 +58,11 @@ function ouvrirDessin(opt) {
   const tailles = el("div", { className: "rangee", style: "justify-content:center" });
   function majOutils() {
     palette.replaceChildren(
-      COULEURS_DESSIN.map(c => el("button", { type: "button", className: "pastille", "aria-label": c,
-        style: "background:" + c + ";border:" + (c === couleur && !gomme ? "3px solid var(--accent)" : "1px solid var(--bord)"),
+            ...COULEURS_DESSIN.map(c => el("button", { type: "button", className: "pastille", "aria-label": c,
+         style: "background:" + c + ";border:" + (c === couleur && !gomme ? "3px solid var(--accent)" : "1px solid var(--bord)"),
         onclick: () => { couleur = c; gomme = false; majOutils(); } })),
       el("button", { type: "button", className: "puce" + (gomme ? " choisie" : ""), onclick: () => { gomme = !gomme; majOutils(); } }, "Gomme"));
-    tailles.replaceChildren([[2, "Fin"], [4, "Moyen"], [8, "Gros"], [14, "Marqueur"]].map(t =>
+        tailles.replaceChildren(...[[2, "Fin"], [4, "Moyen"], [8, "Gros"], [14, "Marqueur"]].map(t =>
       el("button", { type: "button", className: "puce" + (t[0] === epaisseur ? " choisie" : ""), onclick: () => { epaisseur = t[0]; majOutils(); } }, t[1])));
   }
   majOutils();
