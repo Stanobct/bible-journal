@@ -46,7 +46,7 @@ var NB_PRIERES_FIL = 2;
 
 
 $$
-"Instrument de ta paix", "Seigneur, fais de moi un instrument de ta paix. L\u00e0 o\u00f9 est la haine, que je mette l'amour. L\u00e0 o\u00f9 est l'offense, que je mette le pardon. L\u00e0 o\u00f9 est le d\u00e9sespoir, que je mette l'esp\u00e9rance."
+"Instrument de ta paix", "Seigneur, fais de moi un instrument de ta paix. L\u00e0 o\u00f9 est la haine, que je mette l'amour. L\u00e0 o\u00f9 est l'offense, que je mette le pardon. L\u00e0 o\u00f9 est le d\u00e9sespoir, que je mette l'esp\u00e9rance."]
 $$
 
 
