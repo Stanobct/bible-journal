@@ -934,7 +934,7 @@ function rendreFil() {
     el("div", { className: "rangee", style: "justify-content:center" },
       bouton("Carte suivante \u2192", () => {
         filCompte++;
-        if (filCompte >= FIL_MAX) { filCompte = 0; localStorage.setItem("bj-fil-fin", String(Date.now() + 30 * 60000)); }
+        if (filCompte >= FIL_MAX) { filCompte = 0; localStorage.setItem("bj-fil-fin", String(Date.now() + 5 * 60000)); }
         rendreFil(); window.scrollTo(0, 0);
       })));
 }
