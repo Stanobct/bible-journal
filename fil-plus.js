@@ -33,7 +33,7 @@ var NB_PRIERES_FIL = 2;
     ["Dans le silence du c\u0153ur, Dieu parle.", "Sainte Teresa de Calcutta"],
     ["Ora et labora : prie et travaille.", "Saint Beno\u00eet"],
     ["Servez le Seigneur dans la joie.", "Saint Jean Bosco"],
-    ["En tout, aimer et servir.", "Saint Ignace de Loyola"]
+    ["En tout, aimer et servir.", "Saint Ignace de Loyola"],
   ];
 
   var PRIERES = [
@@ -43,7 +43,7 @@ var NB_PRIERES_FIL = 2;
     ["\u00c2me du Christ", "\u00c2me du Christ, sanctifie-moi. Corps du Christ, sauve-moi. Sang du Christ, enivre-moi. Eau du c\u00f4t\u00e9 du Christ, lave-moi. Passion du Christ, fortifie-moi. \u00d4 bon J\u00e9sus, exauce-moi."],
     ["Pri\u00e8re de Fatima", "Mon Dieu, je crois, j'adore, j'esp\u00e8re et je vous aime. Je vous demande pardon pour ceux qui ne croient pas, n'adorent pas, n'esp\u00e8rent pas et ne vous aiment pas."],
     ["Sous ta protection", "Sous l'abri de ta mis\u00e9ricorde, nous nous r\u00e9fugions, Sainte M\u00e8re de Dieu. Ne m\u00e9prise pas nos pri\u00e8res quand nous sommes dans l'\u00e9preuve, mais de tous les dangers d\u00e9livre-nous toujours, Vierge glorieuse et b\u00e9nie."],
-    ["Instrument de ta paix", "Seigneur, fais de moi un instrument de ta paix. L\u00e0 o\u00f9 est la haine, que je mette l'amour. L\u00e0 o\u00f9 est l'offense, que je mette le pardon. L\u00e0 o\u00f9 est le d\u00e9sespoir, que je mette l'esp\u00e9rance."]
+    ["Instrument de ta paix", "Seigneur, fais de moi un instrument de ta paix. L\u00e0 o\u00f9 est la haine, que je mette l'amour. L\u00e0 o\u00f9 est l'offense, que je mette le pardon. L\u00e0 o\u00f9 est le d\u00e9sespoir, que je mette l'esp\u00e9rance."],
   ];
 
   // [titre de la page Wikipedia (anglais), legende, question pour mediter]
